@@ -447,7 +447,7 @@ async def ai_generate_report(
 
 @api_router.get("/")
 async def root():
-    return {"message": "SystemIX AI Ultimate - Business Intelligence API v2.0"}
+    return {"message": "Agentik Solutions - Business Intelligence API v2.0"}
 
 @api_router.get("/health")
 async def health_check():
