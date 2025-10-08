@@ -114,31 +114,19 @@ const SystemIXPlatform = () => {
                 </TabsContent>
 
                 <TabsContent value="automation" className="mt-0">
-                  <div className="text-center py-12">
-                    <h3 className="text-2xl font-bold mb-2">Automation Suite</h3>
-                    <p className="text-muted-foreground">Coming in next phase...</p>
-                  </div>
+                  <AutomationSuite />
                 </TabsContent>
 
                 <TabsContent value="sales" className="mt-0">
-                  <div className="text-center py-12">
-                    <h3 className="text-2xl font-bold mb-2">Sales Suite</h3>
-                    <p className="text-muted-foreground">Coming in next phase...</p>
-                  </div>
+                  <SalesSuite />
                 </TabsContent>
 
                 <TabsContent value="cpq" className="mt-0">
-                  <div className="text-center py-12">
-                    <h3 className="text-2xl font-bold mb-2">CPQ Suite</h3>
-                    <p className="text-muted-foreground">Coming in next phase...</p>
-                  </div>
+                  <CPQSuite />
                 </TabsContent>
 
                 <TabsContent value="finance" className="mt-0">
-                  <div className="text-center py-12">
-                    <h3 className="text-2xl font-bold mb-2">Finance Suite</h3>
-                    <p className="text-muted-foreground">Coming in next phase...</p>
-                  </div>
+                  <FinanceSuite />
                 </TabsContent>
 
                 <TabsContent value="documents" className="mt-0">
@@ -146,10 +134,7 @@ const SystemIXPlatform = () => {
                 </TabsContent>
 
                 <TabsContent value="payments" className="mt-0">
-                  <div className="text-center py-12">
-                    <h3 className="text-2xl font-bold mb-2">Payments Suite</h3>
-                    <p className="text-muted-foreground">Coming in next phase...</p>
-                  </div>
+                  <PaymentsSuite />
                 </TabsContent>
               </div>
             </Tabs>
