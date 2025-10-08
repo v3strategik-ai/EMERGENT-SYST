@@ -52,9 +52,9 @@ const AutomationSuite = () => {
   const activeCount = workflows.filter(w => w.status === 'Active').length;
   const totalRuns = workflows.reduce((sum, w) => sum + (w.run_count || 0), 0);
   const metrics = [
-    { title: 'Active Workflows', value: '127', change: '+23 this month', icon: Zap, color: 'text-blue-500' },
-    { title: 'Tasks Automated', value: '8,942', change: '+1,234 today', icon: CheckCircle, color: 'text-green-500' },
-    { title: 'Time Saved', value: '847h', change: '+156h this week', icon: Clock, color: 'text-purple-500' },
+    { title: 'Active Workflows', value: activeCount.toString(), change: '+23 this month', icon: Zap, color: 'text-blue-500' },
+    { title: 'Tasks Automated', value: totalRuns.toString(), change: '+1,234 today', icon: CheckCircle, color: 'text-green-500' },
+    { title: 'Time Saved', value: `${(totalRuns * 0.1).toFixed(0)}h`, change: '+156h this week', icon: Clock, color: 'text-purple-500' },
     { title: 'Success Rate', value: '99.4%', change: '+0.3% improvement', icon: GitBranch, color: 'text-orange-500' }
   ];
 
