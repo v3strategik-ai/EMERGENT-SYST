@@ -1,9 +1,18 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Users, DollarSign, TrendingUp, BarChart3, Plus, Upload, FileDown } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Users, DollarSign, TrendingUp, BarChart3, Plus, Upload, FileDown, Edit, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { crmAPI } from '../../utils/crmAPI';
+import NewLeadModal from '../modals/NewLeadModal';
+import { format } from 'date-fns';
 
 const CRMSuite = () => {
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newLeadOpen, setNewLeadOpen] = useState(false);
   const metrics = [
     { title: 'Total Pipeline Value', value: '$1.47M', change: '+18.5%', icon: DollarSign, color: 'text-green-500' },
     { title: 'Active Leads', value: '35', change: '+12%', icon: Users, color: 'text-blue-500' },
