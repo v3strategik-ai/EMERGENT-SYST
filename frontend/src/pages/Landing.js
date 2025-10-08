@@ -21,9 +21,13 @@ const Landing = () => {
       <header className="border-b bg-white/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Activity className="h-8 w-8 text-blue-600" />
-              <span className="font-bold text-2xl text-gray-900">StatusHub</span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/agentik-logo.png" 
+                alt="Agentik Solutions" 
+                className="h-10 w-auto object-contain"
+              />
+              <span className="font-bold text-2xl text-gray-900">Agentik Solutions</span>
             </div>
             <div className="flex space-x-3">
               <Link to="/login">
