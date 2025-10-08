@@ -451,6 +451,209 @@ async def ai_generate_report(
     response = await ai_copilot.generate_report(report_type, data)
     return {"report": response}
 
+# ==================== CRM ENDPOINTS ====================
+
+@api_router.post("/crm/leads", response_model=Lead)
+async def create_lead(lead_data: LeadCreate, current_user: User = Depends(get_current_user)):
+    lead = Lead(
+        **lead_data.model_dump(),
+        assigned_to=current_user.name,
+        user_id=current_user.id
+    )
+    doc = lead.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.leads.insert_one(doc)
+    return lead
+
+@api_router.get("/crm/leads", response_model=List[Lead])
+async def get_leads(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for lead in leads:
+        if isinstance(lead.get('created_at'), str):
+            lead['created_at'] = datetime.fromisoformat(lead['created_at'])
+        if isinstance(lead.get('updated_at'), str):
+            lead['updated_at'] = datetime.fromisoformat(lead['updated_at'])
+    return leads
+
+@api_router.put("/crm/leads/{lead_id}", response_model=Lead)
+async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: User = Depends(get_current_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    update_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
+    await db.leads.update_one({"id": lead_id}, {"$set": update_dict})
+    updated = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+    if updated:
+        if isinstance(updated.get('created_at'), str):
+            updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+        if isinstance(updated.get('updated_at'), str):
+            updated['updated_at'] = datetime.fromisoformat(updated['updated_at'])
+        return Lead(**updated)
+    raise HTTPException(status_code=404, detail="Lead not found")
+
+@api_router.delete("/crm/leads/{lead_id}")
+async def delete_lead(lead_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.leads.delete_one({"id": lead_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"message": "Lead deleted successfully"}
+
+# ==================== WORKFLOW ENDPOINTS ====================
+
+@api_router.post("/automation/workflows", response_model=Workflow)
+async def create_workflow(workflow_data: WorkflowCreate, current_user: User = Depends(get_current_user)):
+    workflow = Workflow(**workflow_data.model_dump(), user_id=current_user.id)
+    doc = workflow.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    if doc.get('last_run'):
+        doc['last_run'] = doc['last_run'].isoformat()
+    await db.workflows.insert_one(doc)
+    return workflow
+
+@api_router.get("/automation/workflows", response_model=List[Workflow])
+async def get_workflows(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    workflows = await db.workflows.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for workflow in workflows:
+        if isinstance(workflow.get('created_at'), str):
+            workflow['created_at'] = datetime.fromisoformat(workflow['created_at'])
+        if workflow.get('last_run') and isinstance(workflow.get('last_run'), str):
+            workflow['last_run'] = datetime.fromisoformat(workflow['last_run'])
+    return workflows
+
+@api_router.put("/automation/workflows/{workflow_id}", response_model=Workflow)
+async def update_workflow(workflow_id: str, update_data: WorkflowUpdate, current_user: User = Depends(get_current_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    await db.workflows.update_one({"id": workflow_id}, {"$set": update_dict})
+    updated = await db.workflows.find_one({"id": workflow_id}, {"_id": 0})
+    if updated:
+        if isinstance(updated.get('created_at'), str):
+            updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+        if updated.get('last_run') and isinstance(updated.get('last_run'), str):
+            updated['last_run'] = datetime.fromisoformat(updated['last_run'])
+        return Workflow(**updated)
+    raise HTTPException(status_code=404, detail="Workflow not found")
+
+@api_router.delete("/automation/workflows/{workflow_id}")
+async def delete_workflow(workflow_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.workflows.delete_one({"id": workflow_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return {"message": "Workflow deleted successfully"}
+
+# ==================== QUOTE ENDPOINTS ====================
+
+@api_router.post("/cpq/quotes", response_model=Quote)
+async def create_quote(quote_data: QuoteCreate, current_user: User = Depends(get_current_user)):
+    # Calculate totals
+    subtotal = sum(item['quantity'] * item['price'] for item in quote_data.items)
+    tax = subtotal * quote_data.tax_rate
+    total = subtotal + tax
+    
+    # Generate quote number
+    count = await db.quotes.count_documents({})
+    quote_number = f"Q-2025-{count + 1:04d}"
+    
+    quote = Quote(
+        quote_number=quote_number,
+        client_name=quote_data.client_name,
+        client_email=quote_data.client_email,
+        items=quote_data.items,
+        subtotal=subtotal,
+        tax=tax,
+        total=total,
+        valid_until=datetime.now(timezone.utc) + timedelta(days=30),
+        user_id=current_user.id
+    )
+    doc = quote.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['valid_until'] = doc['valid_until'].isoformat()
+    await db.quotes.insert_one(doc)
+    return quote
+
+@api_router.get("/cpq/quotes", response_model=List[Quote])
+async def get_quotes(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    quotes = await db.quotes.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for quote in quotes:
+        if isinstance(quote.get('created_at'), str):
+            quote['created_at'] = datetime.fromisoformat(quote['created_at'])
+        if isinstance(quote.get('valid_until'), str):
+            quote['valid_until'] = datetime.fromisoformat(quote['valid_until'])
+    return quotes
+
+@api_router.put("/cpq/quotes/{quote_id}", response_model=Quote)
+async def update_quote(quote_id: str, update_data: QuoteUpdate, current_user: User = Depends(get_current_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    await db.quotes.update_one({"id": quote_id}, {"$set": update_dict})
+    updated = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if updated:
+        if isinstance(updated.get('created_at'), str):
+            updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+        if isinstance(updated.get('valid_until'), str):
+            updated['valid_until'] = datetime.fromisoformat(updated['valid_until'])
+        return Quote(**updated)
+    raise HTTPException(status_code=404, detail="Quote not found")
+
+@api_router.delete("/cpq/quotes/{quote_id}")
+async def delete_quote(quote_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.quotes.delete_one({"id": quote_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    return {"message": "Quote deleted successfully"}
+
+# ==================== DOCUMENT ENDPOINTS ====================
+
+@api_router.post("/documents", response_model=Document)
+async def create_document(doc_data: DocumentCreate, current_user: User = Depends(get_current_user)):
+    document = Document(**doc_data.model_dump(), user_id=current_user.id)
+    doc = document.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.documents.insert_one(doc)
+    return document
+
+@api_router.get("/documents", response_model=List[Document])
+async def get_documents(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    documents = await db.documents.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for document in documents:
+        if isinstance(document.get('created_at'), str):
+            document['created_at'] = datetime.fromisoformat(document['created_at'])
+    return documents
+
+@api_router.delete("/documents/{doc_id}")
+async def delete_document(doc_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.documents.delete_one({"id": doc_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return {"message": "Document deleted successfully"}
+
+# ==================== TRANSACTION ENDPOINTS ====================
+
+@api_router.post("/payments/transactions", response_model=Transaction)
+async def create_transaction(trans_data: TransactionCreate, current_user: User = Depends(get_current_user)):
+    count = await db.transactions.count_documents({})
+    trans_id = f"TRX-{count + 1:05d}"
+    
+    transaction = Transaction(
+        transaction_id=trans_id,
+        **trans_data.model_dump(),
+        user_id=current_user.id
+    )
+    doc = transaction.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.transactions.insert_one(doc)
+    return transaction
+
+@api_router.get("/payments/transactions", response_model=List[Transaction])
+async def get_transactions(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    transactions = await db.transactions.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for transaction in transactions:
+        if isinstance(transaction.get('created_at'), str):
+            transaction['created_at'] = datetime.fromisoformat(transaction['created_at'])
+    return transactions
+
 # ==================== BASIC ENDPOINTS ====================
 
 @api_router.get("/")
