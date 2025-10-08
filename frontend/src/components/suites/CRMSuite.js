@@ -126,7 +126,7 @@ const CRMSuite = () => {
           </div>
 
           {/* Sales Pipeline */}
-          <Card className='bg-card border-border'>
+          <Card className='bg-card border-border mb-6'>
             <CardHeader>
               <CardTitle className='flex items-center space-x-2'>
                 <BarChart3 className='h-5 w-5' />
@@ -148,8 +148,64 @@ const CRMSuite = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Leads Table */}
+          <Card className='bg-card border-border'>
+            <CardHeader>
+              <CardTitle>All Leads</CardTitle>
+              <CardDescription>Manage your sales pipeline</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className='flex justify-center py-8'>
+                  <Loader2 className='h-8 w-8 animate-spin' />
+                </div>
+              ) : leads.length === 0 ? (
+                <div className='text-center py-8 text-muted-foreground'>
+                  <p>No leads yet. Create your first lead!</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Value</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {leads.map((lead) => (
+                      <TableRow key={lead.id}>
+                        <TableCell className='font-medium'>{lead.name}</TableCell>
+                        <TableCell>{lead.company}</TableCell>
+                        <TableCell>${lead.value.toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Badge>{lead.status}</Badge>
+                        </TableCell>
+                        <TableCell>{lead.source}</TableCell>
+                        <TableCell>{format(new Date(lead.created_at), 'MMM dd')}</TableCell>
+                        <TableCell>
+                          <div className='flex space-x-2'>
+                            <Button size='sm' variant='ghost' onClick={() => handleDeleteLead(lead.id)}>
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
+
+      <NewLeadModal open={newLeadOpen} onOpenChange={setNewLeadOpen} onSuccess={fetchLeads} />
     </div>
   );
 };
