@@ -1,39 +1,65 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { FileText, DollarSign, TrendingUp, Clock, Plus, Settings, Download } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { FileText, DollarSign, TrendingUp, Clock, Plus, Settings, Download, Loader2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { quoteAPI } from '../../utils/crmAPI';
+import NewQuoteModal from '../modals/NewQuoteModal';
+import { format } from 'date-fns';
 
 const CPQSuite = () => {
+  const [quotes, setQuotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newQuoteOpen, setNewQuoteOpen] = useState(false);
+
+  useEffect(() => {
+    fetchQuotes();
+  }, []);
+
+  const fetchQuotes = async () => {
+    try {
+      const response = await quoteAPI.getQuotes();
+      setQuotes(response.data);
+    } catch (error) {
+      toast.error('Failed to load quotes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await quoteAPI.deleteQuote(id);
+      toast.success('Quote deleted');
+      fetchQuotes();
+    } catch (error) {
+      toast.error('Failed to delete quote');
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await quoteAPI.updateQuote(id, { status: newStatus });
+      toast.success('Status updated');
+      fetchQuotes();
+    } catch (error) {
+      toast.error('Failed to update status');
+    }
+  };
+
+  const totalValue = quotes.reduce((sum, q) => sum + q.total, 0);
+  const activeQuotes = quotes.filter(q => q.status !== 'Rejected').length;
+  const approvedQuotes = quotes.filter(q => q.status === 'Approved').length;
+  const conversionRate = activeQuotes > 0 ? ((approvedQuotes / activeQuotes) * 100).toFixed(1) : 0;
+
   const metrics = [
-    { title: 'Active Quotes', value: '89', change: '+12 this week', icon: FileText, color: 'text-blue-500' },
-    { title: 'Quote Value', value: '$1.2M', change: '+18.5%', icon: DollarSign, color: 'text-green-500' },
-    { title: 'Conversion Rate', value: '67.3%', change: '+5.2%', icon: TrendingUp, color: 'text-purple-500' },
+    { title: 'Active Quotes', value: activeQuotes.toString(), change: '+12 this week', icon: FileText, color: 'text-blue-500' },
+    { title: 'Quote Value', value: `$${(totalValue / 1000).toFixed(1)}K`, change: '+18.5%', icon: DollarSign, color: 'text-green-500' },
+    { title: 'Conversion Rate', value: `${conversionRate}%`, change: '+5.2%', icon: TrendingUp, color: 'text-purple-500' },
     { title: 'Avg Quote Time', value: '2.4h', change: '-0.8h', icon: Clock, color: 'text-orange-500' }
   ];
-
-  const templates = [
-    { name: 'Standard Service', status: 'Active', uses: '45', icon: FileText, color: 'bg-blue-600' },
-    { name: 'Enterprise Package', status: 'Active', uses: '23', icon: FileText, color: 'bg-green-600' },
-    { name: 'Custom Solution', status: 'Draft', uses: '12', icon: FileText, color: 'bg-yellow-600' },
-    { name: 'Maintenance Plan', status: 'Active', uses: '67', icon: FileText, color: 'bg-purple-600' }
-  ];
-
-  const recentQuotes = [
-    { id: 'Q-2024-001', client: 'Acme Corp', value: '$45,000', status: 'Pending', date: '2024-09-20' },
-    { id: 'Q-2024-002', client: 'TechStart Inc', value: '$78,500', status: 'Approved', date: '2024-09-19' },
-    { id: 'Q-2024-003', client: 'Global Solutions', value: '$125,000', status: 'In Review', date: '2024-09-18' },
-    { id: 'Q-2024-004', client: 'Innovation Labs', value: '$32,000', status: 'Draft', date: '2024-09-17' }
-  ];
-
-  const getStatusColor = (status) => {
-    const colors = {
-      'Approved': 'text-green-500',
-      'Pending': 'text-yellow-500',
-      'In Review': 'text-blue-500',
-      'Draft': 'text-gray-500'
-    };
-    return colors[status] || 'text-gray-500';
-  };
 
   return (
     <div className='space-y-6' data-testid='cpq-suite'>
@@ -49,7 +75,7 @@ const CPQSuite = () => {
         </CardHeader>
         <CardContent>
           <div className='flex space-x-4 mb-6'>
-            <Button className='bg-blue-600 hover:bg-blue-700'>
+            <Button className='bg-blue-600 hover:bg-blue-700' onClick={() => setNewQuoteOpen(true)}>
               <Plus className='h-4 w-4 mr-2' />
               Create Quote
               <Badge variant='secondary' className='ml-2'>1</Badge>
@@ -81,57 +107,59 @@ const CPQSuite = () => {
             ))}
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <Card className='bg-card border-border'>
-              <CardHeader>
-                <CardTitle>Quote Templates</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='space-y-3'>
-                  {templates.map((template, idx) => (
-                    <div key={idx} className='flex items-center justify-between p-3 border border-border rounded-lg'>
-                      <div className='flex items-center space-x-3'>
-                        <div className={`p-2 rounded-lg ${template.color}`}>
-                          <template.icon className='h-4 w-4 text-white' />
-                        </div>
-                        <div>
-                          <h4 className='font-semibold text-sm'>{template.name}</h4>
-                          <p className='text-xs text-muted-foreground'>{template.uses} uses this month</p>
-                        </div>
-                      </div>
-                      <Badge variant={template.status === 'Active' ? 'default' : 'secondary'}>
-                        {template.status}
-                      </Badge>
-                    </div>
-                  ))}
+          <Card className='bg-card border-border'>
+            <CardHeader>
+              <CardTitle>All Quotes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className='flex justify-center py-8'>
+                  <Loader2 className='h-8 w-8 animate-spin' />
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className='bg-card border-border'>
-              <CardHeader>
-                <CardTitle>Recent Quotes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='space-y-3'>
-                  {recentQuotes.map((quote, idx) => (
-                    <div key={idx} className='flex items-center justify-between p-3 border border-border rounded-lg'>
-                      <div>
-                        <h4 className='font-semibold text-sm'>{quote.id}</h4>
-                        <p className='text-xs text-muted-foreground'>{quote.client}</p>
-                      </div>
-                      <div className='text-right'>
-                        <p className='font-bold text-sm'>{quote.value}</p>
-                        <p className={`text-xs ${getStatusColor(quote.status)}`}>{quote.status}</p>
-                      </div>
-                    </div>
-                  ))}
+              ) : quotes.length === 0 ? (
+                <div className='text-center py-8 text-muted-foreground'>
+                  <p>No quotes yet. Create your first quote!</p>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Quote #</TableHead>
+                      <TableHead>Client</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {quotes.map((quote) => (
+                      <TableRow key={quote.id}>
+                        <TableCell className='font-medium'>{quote.quote_number}</TableCell>
+                        <TableCell>{quote.client_name}</TableCell>
+                        <TableCell>${quote.total.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <Badge>{quote.status}</Badge>
+                        </TableCell>
+                        <TableCell>{format(new Date(quote.created_at), 'MMM dd')}</TableCell>
+                        <TableCell>
+                          <div className='flex space-x-2'>
+                            <Button size='sm' variant='ghost' onClick={() => handleDelete(quote.id)}>
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
+
+      <NewQuoteModal open={newQuoteOpen} onOpenChange={setNewQuoteOpen} onSuccess={fetchQuotes} />
     </div>
   );
 };
