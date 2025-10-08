@@ -402,11 +402,52 @@ async def get_analytics(current_user: User = Depends(get_admin_user)):
         recent_activity=[StatusCheck(**check) for check in recent]
     )
 
+# ==================== AI COPILOT MODELS ====================
+
+class AIQuery(BaseModel):
+    query: str
+    session_id: Optional[str] = None
+
+class AIResponse(BaseModel):
+    response: str
+    session_id: str
+
+class DataAnalysisRequest(BaseModel):
+    data: dict
+    question: str
+
+# ==================== AI COPILOT ENDPOINTS ====================
+
+ai_copilot = AICopilot()
+
+@api_router.post("/ai/query", response_model=AIResponse)
+async def ai_query(request: AIQuery, current_user: User = Depends(get_current_user)):
+    """Process AI query through the copilot"""
+    session_id = request.session_id or str(uuid.uuid4())
+    response = await ai_copilot.process_query(request.query, session_id)
+    return AIResponse(response=response, session_id=session_id)
+
+@api_router.post("/ai/analyze")
+async def ai_analyze(request: DataAnalysisRequest, current_user: User = Depends(get_current_user)):
+    """Analyze data with AI"""
+    response = await ai_copilot.analyze_data(request.data, request.question)
+    return {"analysis": response}
+
+@api_router.post("/ai/report/{report_type}")
+async def ai_generate_report(
+    report_type: str,
+    data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Generate AI-powered business reports"""
+    response = await ai_copilot.generate_report(report_type, data)
+    return {"report": response}
+
 # ==================== BASIC ENDPOINTS ====================
 
 @api_router.get("/")
 async def root():
-    return {"message": "Status Monitoring API - v1.0"}
+    return {"message": "SystemIX AI Ultimate - Business Intelligence API v2.0"}
 
 @api_router.get("/health")
 async def health_check():
