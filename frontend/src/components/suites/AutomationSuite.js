@@ -115,34 +115,66 @@ const AutomationSuite = () => {
 
           <Card className='bg-card border-border'>
             <CardHeader>
-              <CardTitle>Active Workflows</CardTitle>
+              <CardTitle>All Workflows</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                {workflows.map((workflow, idx) => (
-                  <div key={idx} className='p-4 border border-border rounded-lg hover:bg-accent cursor-pointer transition-colors'>
-                    <div className='flex items-center space-x-3 mb-3'>
-                      <div className={`p-2 rounded-lg ${workflow.color}`}>
-                        <workflow.icon className='h-5 w-5 text-white' />
-                      </div>
-                      <div>
-                        <h4 className='font-semibold text-sm'>{workflow.name}</h4>
-                        <p className='text-xs text-muted-foreground'>{workflow.triggers}</p>
-                      </div>
-                    </div>
-                    <div className='flex justify-between items-center'>
-                      <Badge variant={workflow.status === 'Active' ? 'default' : 'secondary'}>
-                        {workflow.status}
-                      </Badge>
-                      <Button size='sm' variant='outline'>Configure</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {loading ? (
+                <div className='flex justify-center py-8'>
+                  <Loader2 className='h-8 w-8 animate-spin' />
+                </div>
+              ) : workflows.length === 0 ? (
+                <div className='text-center py-8 text-muted-foreground'>
+                  <p>No workflows yet. Create your first automation!</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Trigger</TableHead>
+                      <TableHead>Frequency</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Runs</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {workflows.map((workflow) => (
+                      <TableRow key={workflow.id}>
+                        <TableCell className='font-medium'>{workflow.name}</TableCell>
+                        <TableCell>{workflow.trigger_type}</TableCell>
+                        <TableCell>{workflow.frequency}</TableCell>
+                        <TableCell>
+                          <Badge variant={workflow.status === 'Active' ? 'default' : 'secondary'}>
+                            {workflow.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{workflow.run_count || 0}</TableCell>
+                        <TableCell>
+                          <div className='flex space-x-2'>
+                            <Button
+                              size='sm'
+                              variant='ghost'
+                              onClick={() => handleToggleStatus(workflow.id, workflow.status)}
+                            >
+                              {workflow.status === 'Active' ? <Pause className='h-4 w-4' /> : <Play className='h-4 w-4' />}
+                            </Button>
+                            <Button size='sm' variant='ghost' onClick={() => handleDelete(workflow.id)}>
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </CardContent>
       </Card>
+
+      <NewWorkflowModal open={newWorkflowOpen} onOpenChange={setNewWorkflowOpen} onSuccess={fetchWorkflows} />
     </div>
   );
 };
