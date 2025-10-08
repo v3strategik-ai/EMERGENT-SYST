@@ -13,21 +13,67 @@ const CRMSuite = () => {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newLeadOpen, setNewLeadOpen] = useState(false);
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  const fetchLeads = async () => {
+    try {
+      const response = await crmAPI.getLeads();
+      setLeads(response.data);
+    } catch (error) {
+      toast.error('Failed to load leads');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteLead = async (id) => {
+    try {
+      await crmAPI.deleteLead(id);
+      toast.success('Lead deleted successfully');
+      fetchLeads();
+    } catch (error) {
+      toast.error('Failed to delete lead');
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await crmAPI.updateLead(id, { status: newStatus });
+      toast.success('Status updated');
+      fetchLeads();
+    } catch (error) {
+      toast.error('Failed to update status');
+    }
+  };
+
+  // Calculate metrics from real data
+  const totalValue = leads.reduce((sum, lead) => sum + lead.value, 0);
+  const activeLeads = leads.length;
+  const closedWon = leads.filter(l => l.status === 'Closed Won').length;
+  const conversionRate = activeLeads > 0 ? ((closedWon / activeLeads) * 100).toFixed(1) : 0;
+  const avgDealSize = activeLeads > 0 ? (totalValue / activeLeads).toFixed(0) : 0;
+
   const metrics = [
-    { title: 'Total Pipeline Value', value: '$1.47M', change: '+18.5%', icon: DollarSign, color: 'text-green-500' },
-    { title: 'Active Leads', value: '35', change: '+12%', icon: Users, color: 'text-blue-500' },
-    { title: 'Conversion Rate', value: '24.8%', change: '+3.2%', icon: TrendingUp, color: 'text-purple-500' },
-    { title: 'Avg Deal Size', value: '$42K', change: '+8.7%', icon: BarChart3, color: 'text-orange-500' }
+    { title: 'Total Pipeline Value', value: `$${(totalValue / 1000).toFixed(1)}K`, change: '+18.5%', icon: DollarSign, color: 'text-green-500' },
+    { title: 'Active Leads', value: activeLeads.toString(), change: '+12%', icon: Users, color: 'text-blue-500' },
+    { title: 'Conversion Rate', value: `${conversionRate}%`, change: '+3.2%', icon: TrendingUp, color: 'text-purple-500' },
+    { title: 'Avg Deal Size', value: `$${avgDealSize}`, change: '+8.7%', icon: BarChart3, color: 'text-orange-500' }
   ];
 
-  const pipelineStages = [
-    { stage: 'Lead', count: 12, value: '$450K', color: 'bg-gray-500' },
-    { stage: 'Qualified', count: 8, value: '$320K', color: 'bg-blue-500' },
-    { stage: 'Discovery', count: 6, value: '$280K', color: 'bg-yellow-500' },
-    { stage: 'Proposal', count: 4, value: '$180K', color: 'bg-orange-500' },
-    { stage: 'Negotiation', count: 3, value: '$150K', color: 'bg-purple-500' },
-    { stage: 'Closed Won', count: 2, value: '$95K', color: 'bg-green-500' }
-  ];
+  const stages = ['Lead', 'Qualified', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won'];
+  const pipelineStages = stages.map((stage, idx) => {
+    const stageLeads = leads.filter(l => l.status === stage);
+    const stageValue = stageLeads.reduce((sum, l) => sum + l.value, 0);
+    const colors = ['bg-gray-500', 'bg-blue-500', 'bg-yellow-500', 'bg-orange-500', 'bg-purple-500', 'bg-green-500'];
+    return {
+      stage,
+      count: stageLeads.length,
+      value: `$${(stageValue / 1000).toFixed(0)}K`,
+      color: colors[idx]
+    };
+  });
 
   return (
     <div className='space-y-6' data-testid='crm-suite'>
