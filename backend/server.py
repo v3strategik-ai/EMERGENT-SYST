@@ -13,6 +13,14 @@ from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt
 from ai_copilot import AICopilot
+from models import (
+    Lead, LeadCreate, LeadUpdate,
+    Workflow, WorkflowCreate, WorkflowUpdate,
+    Quote, QuoteCreate, QuoteUpdate,
+    Document, DocumentCreate,
+    Transaction, TransactionCreate,
+    DashboardStats
+)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
