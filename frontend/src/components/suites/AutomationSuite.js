@@ -58,15 +58,6 @@ const AutomationSuite = () => {
     { title: 'Success Rate', value: '99.4%', change: '+0.3% improvement', icon: GitBranch, color: 'text-orange-500' }
   ];
 
-  const workflows = [
-    { name: 'Lead Auto-Assignment', status: 'Active', triggers: '342/day', icon: GitBranch, color: 'bg-green-600' },
-    { name: 'Invoice Generation', status: 'Active', triggers: '89/day', icon: CheckCircle, color: 'bg-blue-600' },
-    { name: 'Email Follow-ups', status: 'Active', triggers: '567/day', icon: Zap, color: 'bg-purple-600' },
-    { name: 'Report Scheduling', status: 'Paused', triggers: '45/day', icon: Clock, color: 'bg-orange-600' },
-    { name: 'Data Backup', status: 'Active', triggers: '24/day', icon: GitBranch, color: 'bg-teal-600' },
-    { name: 'Slack Notifications', status: 'Active', triggers: '789/day', icon: Zap, color: 'bg-pink-600' }
-  ];
-
   return (
     <div className='space-y-6' data-testid='automation-suite'>
       <Card className='bg-card border-border'>
