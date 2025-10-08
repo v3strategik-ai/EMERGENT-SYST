@@ -90,7 +90,7 @@ const CRMSuite = () => {
         <CardContent>
           {/* Action Buttons */}
           <div className='flex space-x-4 mb-6'>
-            <Button className='bg-purple-600 hover:bg-purple-700'>
+            <Button className='bg-purple-600 hover:bg-purple-700' onClick={() => setNewLeadOpen(true)}>
               <Plus className='h-4 w-4 mr-2' />
               New Lead
               <Badge variant='secondary' className='ml-2'>12</Badge>
