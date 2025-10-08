@@ -1,9 +1,56 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Zap, GitBranch, Clock, CheckCircle, Plus, Play, Pause } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Zap, GitBranch, Clock, CheckCircle, Plus, Play, Pause, Loader2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { workflowAPI } from '../../utils/crmAPI';
+import NewWorkflowModal from '../modals/NewWorkflowModal';
 
 const AutomationSuite = () => {
+  const [workflows, setWorkflows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newWorkflowOpen, setNewWorkflowOpen] = useState(false);
+
+  useEffect(() => {
+    fetchWorkflows();
+  }, []);
+
+  const fetchWorkflows = async () => {
+    try {
+      const response = await workflowAPI.getWorkflows();
+      setWorkflows(response.data);
+    } catch (error) {
+      toast.error('Failed to load workflows');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'Active' ? 'Paused' : 'Active';
+    try {
+      await workflowAPI.updateWorkflow(id, { status: newStatus });
+      toast.success(`Workflow ${newStatus.toLowerCase()}`);
+      fetchWorkflows();
+    } catch (error) {
+      toast.error('Failed to update workflow');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await workflowAPI.deleteWorkflow(id);
+      toast.success('Workflow deleted');
+      fetchWorkflows();
+    } catch (error) {
+      toast.error('Failed to delete workflow');
+    }
+  };
+
+  const activeCount = workflows.filter(w => w.status === 'Active').length;
+  const totalRuns = workflows.reduce((sum, w) => sum + (w.run_count || 0), 0);
   const metrics = [
     { title: 'Active Workflows', value: '127', change: '+23 this month', icon: Zap, color: 'text-blue-500' },
     { title: 'Tasks Automated', value: '8,942', change: '+1,234 today', icon: CheckCircle, color: 'text-green-500' },
