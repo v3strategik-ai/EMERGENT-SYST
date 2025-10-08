@@ -6,7 +6,7 @@ import uuid
 class AICopilot:
     def __init__(self):
         self.api_key = os.environ.get('EMERGENT_LLM_KEY')
-        self.system_message = """You are SystemIX AI Copilot, an advanced business intelligence assistant. 
+        self.system_message = """You are Agentik Solutions AI Copilot, an advanced business intelligence assistant. 
 You help users with:
 - Data analysis and insights
 - Report generation
