@@ -46,10 +46,14 @@ const Register = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <Activity className="h-12 w-12 text-blue-600" />
+            <img 
+              src="/agentik-logo.png" 
+              alt="Agentik Solutions" 
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">Create Account</CardTitle>
-          <CardDescription>Join StatusHub and start monitoring</CardDescription>
+          <CardDescription>Join Agentik Solutions and start monitoring</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
