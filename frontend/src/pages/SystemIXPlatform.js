@@ -9,7 +9,12 @@ import AICopilot from '../components/AICopilot';
 import Dashboard from '../components/suites/Dashboard';
 import CRMSuite from '../components/suites/CRMSuite';
 import AnalyticsSuite from '../components/suites/AnalyticsSuite';
+import AutomationSuite from '../components/suites/AutomationSuite';
+import SalesSuite from '../components/suites/SalesSuite';
+import CPQSuite from '../components/suites/CPQSuite';
+import FinanceSuite from '../components/suites/FinanceSuite';
 import DocumentsSuite from '../components/suites/DocumentsSuite';
+import PaymentsSuite from '../components/suites/PaymentsSuite';
 
 const SystemIXPlatform = () => {
   const { user } = useAuth();
