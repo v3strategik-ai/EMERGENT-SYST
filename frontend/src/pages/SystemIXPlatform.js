@@ -45,12 +45,14 @@ const SystemIXPlatform = () => {
         <header className="border-b border-border bg-card sticky top-0 z-40">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center space-x-4">
-              <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-2xl">SX</span>
-              </div>
+              <img 
+                src="/agentik-logo.png" 
+                alt="Agentik Solutions" 
+                className="h-16 w-auto object-contain"
+              />
               <div>
                 <h1 className="text-3xl font-bold text-primary bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                  SystemIX AI Ultimate
+                  Agentik Solutions
                 </h1>
                 <p className="text-base text-muted-foreground font-medium">
                   Revolutionary Business Intelligence Suite
