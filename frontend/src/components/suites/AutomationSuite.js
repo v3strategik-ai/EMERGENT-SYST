@@ -81,7 +81,7 @@ const AutomationSuite = () => {
         </CardHeader>
         <CardContent>
           <div className='flex space-x-4 mb-6'>
-            <Button className='bg-purple-600 hover:bg-purple-700'>
+            <Button className='bg-purple-600 hover:bg-purple-700' onClick={() => setNewWorkflowOpen(true)}>
               <Plus className='h-4 w-4 mr-2' />
               New Workflow
               <Badge variant='secondary' className='ml-2'>1</Badge>
