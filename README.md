@@ -72,22 +72,29 @@ A comprehensive, production-ready business intelligence platform with 8 integrat
 ## 🛠️ Tech Stack
 
 **Backend:**
-- FastAPI (Python 3.11)
-- MongoDB with Motor (async driver)
-- JWT authentication
+- FastAPI (Python 3.11.13)
+- MongoDB 7.0.24 with Motor (async driver)
+- JWT authentication with bcrypt
+- emergentintegrations (AI integration)
 - Pydantic for data validation
-- bcrypt for password hashing
 
 **Frontend:**
-- React 19
-- React Router DOM v7
-- shadcn/ui components
-- Tailwind CSS
-- Axios for API calls
-- date-fns for date formatting
+- React 19.0.0
+- React Router DOM v7.5.1
+- shadcn/ui component library
+- Tailwind CSS 3.4.17
+- Radix UI primitives
+- Lucide React icons
+- date-fns for formatting
+
+**AI Integration:**
+- emergentintegrations library
+- OpenAI gpt-4o-mini
+- Emergent Universal LLM Key
 
 **Database:**
-- MongoDB 7.0.24
+- MongoDB 7.0.24 (NoSQL)
+- Collections: users, status_checks
 
 ## 📦 Installation & Setup
 
