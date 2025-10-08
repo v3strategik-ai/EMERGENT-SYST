@@ -43,10 +43,14 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <Activity className="h-12 w-12 text-blue-600" />
+            <img 
+              src="/agentik-logo.png" 
+              alt="Agentik Solutions" 
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your StatusHub account</CardDescription>
+          <CardDescription>Sign in to your Agentik Solutions account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
