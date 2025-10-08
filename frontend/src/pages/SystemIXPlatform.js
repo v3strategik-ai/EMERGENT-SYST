@@ -150,7 +150,7 @@ const SystemIXPlatform = () => {
         <footer className="border-t border-border bg-card mt-12">
           <div className="px-6 py-4 text-center">
             <p className="text-sm text-muted-foreground">
-              © 2025 SystemIX AI Ultimate. Built with ❤️ on Emergent Platform
+              © 2025 Agentik Solutions. Built with ❤️ on Emergent Platform
             </p>
           </div>
         </footer>
