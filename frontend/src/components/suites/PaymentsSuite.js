@@ -1,9 +1,38 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { CreditCard, DollarSign, TrendingUp, RefreshCw, Plus, Download, Settings } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { CreditCard, DollarSign, TrendingUp, RefreshCw, Plus, Download, Settings, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { paymentAPI } from '../../utils/crmAPI';
+import NewTransactionModal from '../modals/NewTransactionModal';
+import { format } from 'date-fns';
 
 const PaymentsSuite = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newTransOpen, setNewTransOpen] = useState(false);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await paymentAPI.getTransactions();
+      setTransactions(response.data);
+    } catch (error) {
+      toast.error('Failed to load transactions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalProcessed = transactions.reduce((sum, t) => sum + t.amount, 0);
+  const totalCount = transactions.length;
+  const completedCount = transactions.filter(t => t.status === 'Completed').length;
+  const successRate = totalCount > 0 ? ((completedCount / totalCount) * 100).toFixed(1) : 0;
   const metrics = [
     { title: 'Total Processed', value: '$3.2M', change: '+22.4%', icon: DollarSign, color: 'text-green-500' },
     { title: 'Transactions', value: '2,847', change: '+156 today', icon: CreditCard, color: 'text-blue-500' },
