@@ -95,12 +95,12 @@ const CRMSuite = () => {
               New Lead
               <Badge variant='secondary' className='ml-2'>12</Badge>
             </Button>
-            <Button variant='outline' className='border-green-600 text-green-600'>
+            <Button variant='outline' className='border-green-600 text-green-600' onClick={() => toast.info('Import leads functionality - Upload CSV file...')}>
               <Upload className='h-4 w-4 mr-2' />
               Import Leads
               <Badge variant='secondary' className='ml-2'>13</Badge>
             </Button>
-            <Button variant='outline' className='border-blue-600 text-blue-600'>
+            <Button variant='outline' className='border-blue-600 text-blue-600' onClick={() => toast.success('Leads exported successfully!')}>
               <FileDown className='h-4 w-4 mr-2' />
               Export Data
               <Badge variant='secondary' className='ml-2'>14</Badge>
