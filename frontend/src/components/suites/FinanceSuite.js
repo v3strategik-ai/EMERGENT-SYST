@@ -96,7 +96,11 @@ const FinanceSuite = () => {
               <CardContent>
                 <div className='space-y-3'>
                   {reports.map((report, idx) => (
-                    <div key={idx} className='flex items-center justify-between p-3 border border-border rounded-lg'>
+                    <div 
+                      key={idx} 
+                      className='flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent cursor-pointer transition-colors'
+                      onClick={() => handleGenerateReport(report.name)}
+                    >
                       <div className='flex items-center space-x-3'>
                         <div className={`p-2 rounded-lg ${report.color}`}>
                           <report.icon className='h-4 w-4 text-white' />
