@@ -133,6 +133,7 @@ const Dashboard = () => {
                 key={idx}
                 variant='outline'
                 className={`relative h-20 flex-col space-y-2 ${action.color} text-white border-none hover:opacity-80 transition-opacity`}
+                onClick={() => handleQuickAction(action.title)}
               >
                 <action.icon className='h-6 w-6' />
                 <span className='text-xs'>{action.title}</span>
@@ -144,6 +145,11 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modals */}
+      <NewLeadModal open={leadModalOpen} onOpenChange={setLeadModalOpen} onSuccess={() => toast.success('Lead created!')} />
+      <NewQuoteModal open={quoteModalOpen} onOpenChange={setQuoteModalOpen} onSuccess={() => toast.success('Quote created!')} />
+      <NewTransactionModal open={invoiceModalOpen} onOpenChange={setInvoiceModalOpen} onSuccess={() => toast.success('Invoice processed!')} />
     </div>
   );
 };
