@@ -45,10 +45,10 @@ const SalesSuite = () => {
   const teamSize = 23; // Static for now
   const quotaAttainment = deals.length > 0 ? ((closedDeals / deals.length) * 100 * 1.5).toFixed(0) : 0;
   const metrics = [
-    { title: 'Monthly Revenue', value: '$2.4M', change: '+18.2%', icon: DollarSign, color: 'text-green-500' },
-    { title: 'Deals Closed', value: '67', change: '+12 this week', icon: Target, color: 'text-blue-500' },
-    { title: 'Sales Team', value: '23', change: '+3 new reps', icon: Users, color: 'text-purple-500' },
-    { title: 'Quota Attainment', value: '124%', change: '+8% over target', icon: TrendingUp, color: 'text-orange-500' }
+    { title: 'Monthly Revenue', value: `$${(totalRevenue / 1000).toFixed(1)}K`, change: '+18.2%', icon: DollarSign, color: 'text-green-500' },
+    { title: 'Deals Closed', value: closedDeals.toString(), change: '+12 this week', icon: Target, color: 'text-blue-500' },
+    { title: 'Sales Team', value: teamSize.toString(), change: '+3 new reps', icon: Users, color: 'text-purple-500' },
+    { title: 'Quota Attainment', value: `${quotaAttainment}%`, change: '+8% over target', icon: TrendingUp, color: 'text-orange-500' }
   ];
 
   const topPerformers = [
