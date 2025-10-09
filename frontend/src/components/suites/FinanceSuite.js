@@ -56,16 +56,16 @@ const FinanceSuite = () => {
         </CardHeader>
         <CardContent>
           <div className='flex space-x-4 mb-6'>
-            <Button className='bg-green-600 hover:bg-green-700'>
+            <Button className='bg-green-600 hover:bg-green-700' onClick={() => handleGenerateReport('Financial')}>
               <Plus className='h-4 w-4 mr-2' />
               Generate Report
               <Badge variant='secondary' className='ml-2'>3</Badge>
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => handleGenerateReport('Budget')}>
               <BarChart3 className='h-4 w-4 mr-2' />
               Budget Planner
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.success('Data exported successfully!')}>
               <Download className='h-4 w-4 mr-2' />
               Export Data
             </Button>
