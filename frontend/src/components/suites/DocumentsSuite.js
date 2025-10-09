@@ -79,12 +79,12 @@ const DocumentsSuite = () => {
         </CardHeader>
         <CardContent>
           <div className="flex space-x-4 mb-6">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setNewDocOpen(true)}>
               <Upload className="h-4 w-4 mr-2" />
               Upload Documents
               <Badge variant="secondary" className="ml-2">10</Badge>
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => setNewDocOpen(true)}>
               <FileText className="h-4 w-4 mr-2" />
               Create from Template
             </Button>
