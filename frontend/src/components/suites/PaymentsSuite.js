@@ -174,30 +174,53 @@ const PaymentsSuite = () => {
 
           <Card className='bg-card border-border'>
             <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
+              <CardTitle>All Transactions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='space-y-2'>
-                {recentTransactions.map((transaction, idx) => (
-                  <div key={idx} className='flex items-center justify-between p-3 border border-border rounded-lg'>
-                    <div>
-                      <h4 className='font-semibold text-sm'>{transaction.id}</h4>
-                      <p className='text-xs text-muted-foreground'>{transaction.customer}</p>
-                    </div>
-                    <div className='flex items-center space-x-4'>
-                      <span className='text-xs text-muted-foreground'>{transaction.gateway}</span>
-                      <span className='font-bold'>{transaction.amount}</span>
-                      <Badge className={getStatusColor(transaction.status)} variant='outline'>
-                        {transaction.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {loading ? (
+                <div className='flex justify-center py-8'>
+                  <Loader2 className='h-8 w-8 animate-spin' />
+                </div>
+              ) : transactions.length === 0 ? (
+                <div className='text-center py-8 text-muted-foreground'>
+                  <p>No transactions yet. Process your first payment!</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Transaction ID</TableHead>
+                      <TableHead>Customer</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Gateway</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transactions.map((trans) => (
+                      <TableRow key={trans.id}>
+                        <TableCell className='font-medium'>{trans.transaction_id}</TableCell>
+                        <TableCell>{trans.customer_name}</TableCell>
+                        <TableCell>${trans.amount.toFixed(2)}</TableCell>
+                        <TableCell>{trans.gateway}</TableCell>
+                        <TableCell>
+                          <Badge variant={trans.status === 'Completed' ? 'default' : 'secondary'}>
+                            {trans.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{format(new Date(trans.created_at), 'MMM dd')}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </CardContent>
       </Card>
+
+      <NewTransactionModal open={newTransOpen} onOpenChange={setNewTransOpen} onSuccess={fetchTransactions} />
     </div>
   );
 };
