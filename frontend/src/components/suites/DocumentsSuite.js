@@ -1,9 +1,47 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { FileText, Upload, RefreshCw, Search, Folder, File, Image, Archive } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { FileText, Upload, RefreshCw, Search, Folder, File, Image, Archive, Loader2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { documentAPI } from '../../utils/crmAPI';
+import NewDocumentModal from '../modals/NewDocumentModal';
+import { format } from 'date-fns';
 
 const DocumentsSuite = () => {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newDocOpen, setNewDocOpen] = useState(false);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    try {
+      const response = await documentAPI.getDocuments();
+      setDocuments(response.data);
+    } catch (error) {
+      toast.error('Failed to load documents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await documentAPI.deleteDocument(id);
+      toast.success('Document deleted');
+      fetchDocuments();
+    } catch (error) {
+      toast.error('Failed to delete document');
+    }
+  };
+
+  const totalDocs = documents.length;
+  const totalSize = documents.reduce((sum, doc) => sum + doc.file_size, 0);
+  const templates = [...new Set(documents.map(d => d.template_used))].length;
   const metrics = [
     { title: 'Total Documents', value: '2,847', change: '+156 this month', icon: FileText, color: 'text-blue-500' },
     { title: 'Storage Used', value: '847 GB', change: '+23 GB', icon: Folder, color: 'text-green-500' },
