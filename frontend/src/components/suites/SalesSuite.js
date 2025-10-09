@@ -1,9 +1,49 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { TrendingUp, Target, Users, DollarSign, Plus, Download, Share2 } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { TrendingUp, Target, Users, DollarSign, Plus, Download, Share2, Loader2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { crmAPI } from '../../utils/crmAPI';
+import NewLeadModal from '../modals/NewLeadModal';
+import { format } from 'date-fns';
 
 const SalesSuite = () => {
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newDealOpen, setNewDealOpen] = useState(false);
+
+  useEffect(() => {
+    fetchDeals();
+  }, []);
+
+  const fetchDeals = async () => {
+    try {
+      const response = await crmAPI.getLeads();
+      // Filter for closed won deals
+      setDeals(response.data);
+    } catch (error) {
+      toast.error('Failed to load deals');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await crmAPI.deleteLead(id);
+      toast.success('Deal deleted');
+      fetchDeals();
+    } catch (error) {
+      toast.error('Failed to delete deal');
+    }
+  };
+
+  const closedDeals = deals.filter(d => d.status === 'Closed Won').length;
+  const totalRevenue = deals.filter(d => d.status === 'Closed Won').reduce((sum, d) => sum + d.value, 0);
+  const teamSize = 23; // Static for now
+  const quotaAttainment = deals.length > 0 ? ((closedDeals / deals.length) * 100 * 1.5).toFixed(0) : 0;
   const metrics = [
     { title: 'Monthly Revenue', value: '$2.4M', change: '+18.2%', icon: DollarSign, color: 'text-green-500' },
     { title: 'Deals Closed', value: '67', change: '+12 this week', icon: Target, color: 'text-blue-500' },
