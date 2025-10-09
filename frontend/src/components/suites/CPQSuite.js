@@ -80,11 +80,11 @@ const CPQSuite = () => {
               Create Quote
               <Badge variant='secondary' className='ml-2'>1</Badge>
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.info('Opening price calculator...')}>
               <Settings className='h-4 w-4 mr-2' />
               Price Calculator
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.success('Quotes exported successfully!')}>
               <Download className='h-4 w-4 mr-2' />
               Export Quotes
             </Button>
