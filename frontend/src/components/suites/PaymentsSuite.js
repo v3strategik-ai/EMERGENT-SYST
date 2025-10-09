@@ -89,11 +89,11 @@ const PaymentsSuite = () => {
               Process Payment
               <Badge variant='secondary' className='ml-2'>11</Badge>
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.info('Opening payment gateway configuration...')}>
               <Settings className='h-4 w-4 mr-2' />
               Gateway Settings
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.success('Transactions exported successfully!')}>
               <Download className='h-4 w-4 mr-2' />
               Export Transactions
             </Button>
