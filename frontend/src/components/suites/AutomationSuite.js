@@ -77,11 +77,11 @@ const AutomationSuite = () => {
               New Workflow
               <Badge variant='secondary' className='ml-2'>1</Badge>
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.success('Running all active workflows...')}>
               <Play className='h-4 w-4 mr-2' />
               Run All
             </Button>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={() => toast.success('Pausing all workflows...')}>
               <Pause className='h-4 w-4 mr-2' />
               Pause All
             </Button>
