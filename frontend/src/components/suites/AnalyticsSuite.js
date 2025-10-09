@@ -114,6 +114,35 @@ const AnalyticsSuite = () => {
           </Card>
         </CardContent>
       </Card>
+
+      <Dialog open={newDashboardOpen} onOpenChange={setNewDashboardOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Dashboard</DialogTitle>
+            <DialogDescription>Design a custom analytics dashboard</DialogDescription>
+          </DialogHeader>
+          <div className='space-y-4 py-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='dashboard-name'>Dashboard Name</Label>
+              <Input
+                id='dashboard-name'
+                value={dashboardName}
+                onChange={(e) => setDashboardName(e.target.value)}
+                placeholder='e.g., Q4 Sales Performance'
+              />
+            </div>
+            <div className='flex justify-end space-x-2'>
+              <Button variant='outline' onClick={() => setNewDashboardOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleCreateDashboard}>
+                <Plus className='h-4 w-4 mr-2' />
+                Create Dashboard
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
