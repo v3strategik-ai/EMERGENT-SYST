@@ -49,7 +49,7 @@ const DocumentsSuite = () => {
     { title: 'Conversions', value: '1,234', change: '+89 today', icon: RefreshCw, color: 'text-orange-500' }
   ];
 
-  const templates = [
+  const templateList = [
     { name: 'Contract Template', type: 'Legal', uses: '45', icon: FileText, color: 'bg-blue-600' },
     { name: 'Invoice Template', type: 'Finance', uses: '123', icon: File, color: 'bg-green-600' },
     { name: 'Proposal Template', type: 'Sales', uses: '67', icon: FileText, color: 'bg-purple-600' },
