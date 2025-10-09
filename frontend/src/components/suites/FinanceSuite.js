@@ -1,9 +1,26 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { DollarSign, TrendingUp, PieChart, BarChart3, Plus, Download, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 
 const FinanceSuite = () => {
+  const [reportOpen, setReportOpen] = useState(false);
+  const [generatingReport, setGeneratingReport] = useState(false);
+
+  const handleGenerateReport = async (type) => {
+    setGeneratingReport(true);
+    setReportOpen(true);
+    
+    // Simulate report generation
+    setTimeout(() => {
+      toast.success(`${type} report generated successfully!`);
+      setGeneratingReport(false);
+      setReportOpen(false);
+    }, 2000);
+  };
   const metrics = [
     { title: 'Total Revenue', value: '$2.8M', change: '+15.2%', icon: DollarSign, color: 'text-green-500' },
     { title: 'Profit Margin', value: '28.4%', change: '+3.1%', icon: TrendingUp, color: 'text-blue-500' },
