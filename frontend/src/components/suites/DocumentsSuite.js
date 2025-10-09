@@ -88,11 +88,11 @@ const DocumentsSuite = () => {
               <FileText className="h-4 w-4 mr-2" />
               Create from Template
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => toast.info('Opening file converter - Convert between PDF, DOCX, XLSX...')}>
               <RefreshCw className="h-4 w-4 mr-2" />
               File Converter
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => toast.info('Opening document search...')}>
               <Search className="h-4 w-4 mr-2" />
               Search
             </Button>
