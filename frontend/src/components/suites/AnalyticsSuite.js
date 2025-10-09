@@ -87,7 +87,11 @@ const AnalyticsSuite = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {dashboards.map((dash, idx) => (
-                  <div key={idx} className="p-4 border border-border rounded-lg hover:bg-accent cursor-pointer transition-colors">
+                  <div 
+                    key={idx} 
+                    className="p-4 border border-border rounded-lg hover:bg-accent cursor-pointer transition-colors"
+                    onClick={() => toast.success(`Opening ${dash.name} dashboard...`)}
+                  >
                     <div className="flex items-center space-x-3 mb-3">
                       <div className={`p-2 rounded-lg ${dash.color}`}>
                         <dash.icon className="h-5 w-5 text-white" />
@@ -99,7 +103,9 @@ const AnalyticsSuite = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-muted-foreground">{dash.users} users</span>
-                      <Button size="sm" variant="outline">View</Button>
+                      <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); toast.info(`Viewing ${dash.name}`); }}>
+                        View
+                      </Button>
                     </div>
                   </div>
                 ))}
