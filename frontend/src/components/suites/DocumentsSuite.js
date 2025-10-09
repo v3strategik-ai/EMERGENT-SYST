@@ -43,9 +43,9 @@ const DocumentsSuite = () => {
   const totalSize = documents.reduce((sum, doc) => sum + doc.file_size, 0);
   const templates = [...new Set(documents.map(d => d.template_used))].length;
   const metrics = [
-    { title: 'Total Documents', value: '2,847', change: '+156 this month', icon: FileText, color: 'text-blue-500' },
-    { title: 'Storage Used', value: '847 GB', change: '+23 GB', icon: Folder, color: 'text-green-500' },
-    { title: 'Templates', value: '24', change: '+3 new', icon: File, color: 'text-purple-500' },
+    { title: 'Total Documents', value: totalDocs.toString(), change: '+156 this month', icon: FileText, color: 'text-blue-500' },
+    { title: 'Storage Used', value: `${(totalSize / 1000000).toFixed(0)} MB`, change: '+23 MB', icon: Folder, color: 'text-green-500' },
+    { title: 'Templates', value: templates.toString(), change: '+3 new', icon: File, color: 'text-purple-500' },
     { title: 'Conversions', value: '1,234', change: '+89 today', icon: RefreshCw, color: 'text-orange-500' }
   ];
 
