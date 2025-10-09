@@ -123,7 +123,7 @@ const DocumentsSuite = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {templates.map((template, idx) => (
+                  {templateList.map((template, idx) => (
                     <div key={idx} className="p-3 border border-border rounded-lg hover:bg-accent cursor-pointer">
                       <div className="flex items-center space-x-3 mb-2">
                         <div className={`p-2 rounded-lg ${template.color}`}>
