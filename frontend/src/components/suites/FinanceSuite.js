@@ -151,6 +151,18 @@ const FinanceSuite = () => {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Generating Report</DialogTitle>
+            <DialogDescription>Please wait while we prepare your financial report...</DialogDescription>
+          </DialogHeader>
+          <div className='flex justify-center py-8'>
+            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600'></div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
