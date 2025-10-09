@@ -161,8 +161,63 @@ const SalesSuite = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Deals Table */}
+          <Card className='bg-card border-border mt-6'>
+            <CardHeader>
+              <CardTitle>All Deals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className='flex justify-center py-8'>
+                  <Loader2 className='h-8 w-8 animate-spin' />
+                </div>
+              ) : deals.length === 0 ? (
+                <div className='text-center py-8 text-muted-foreground'>
+                  <p>No deals yet. Create your first deal!</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Value</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {deals.map((deal) => (
+                      <TableRow key={deal.id}>
+                        <TableCell className='font-medium'>{deal.company}</TableCell>
+                        <TableCell>{deal.name}</TableCell>
+                        <TableCell>${deal.value.toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Badge variant={deal.status === 'Closed Won' ? 'default' : 'secondary'}>
+                            {deal.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{deal.source}</TableCell>
+                        <TableCell>{format(new Date(deal.created_at), 'MMM dd')}</TableCell>
+                        <TableCell>
+                          <Button size='sm' variant='ghost' onClick={() => handleDelete(deal.id)}>
+                            <Trash2 className='h-4 w-4' />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
+
+      <NewLeadModal open={newDealOpen} onOpenChange={setNewDealOpen} onSuccess={fetchDeals} />
     </div>
   );
 };
