@@ -34,9 +34,9 @@ const PaymentsSuite = () => {
   const completedCount = transactions.filter(t => t.status === 'Completed').length;
   const successRate = totalCount > 0 ? ((completedCount / totalCount) * 100).toFixed(1) : 0;
   const metrics = [
-    { title: 'Total Processed', value: '$3.2M', change: '+22.4%', icon: DollarSign, color: 'text-green-500' },
-    { title: 'Transactions', value: '2,847', change: '+156 today', icon: CreditCard, color: 'text-blue-500' },
-    { title: 'Success Rate', value: '99.2%', change: '+0.3%', icon: TrendingUp, color: 'text-purple-500' },
+    { title: 'Total Processed', value: `$${(totalProcessed / 1000).toFixed(1)}K`, change: '+22.4%', icon: DollarSign, color: 'text-green-500' },
+    { title: 'Transactions', value: totalCount.toString(), change: '+156 today', icon: CreditCard, color: 'text-blue-500' },
+    { title: 'Success Rate', value: `${successRate}%`, change: '+0.3%', icon: TrendingUp, color: 'text-purple-500' },
     { title: 'Recurring', value: '847', change: '+89 active', icon: RefreshCw, color: 'text-orange-500' }
   ];
 
