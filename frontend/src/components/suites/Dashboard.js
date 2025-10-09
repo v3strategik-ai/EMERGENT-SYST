@@ -1,10 +1,49 @@
+import { useState } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { DollarSign, Users, TrendingUp, Activity, Bot, Shield } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Plus, FileText, CreditCard, Calendar, BarChart3, Zap, Lock, Database } from 'lucide-react';
+import { toast } from 'sonner';
+import NewLeadModal from '../modals/NewLeadModal';
+import NewQuoteModal from '../modals/NewQuoteModal';
+import NewTransactionModal from '../modals/NewTransactionModal';
 
 const Dashboard = () => {
+  const [leadModalOpen, setLeadModalOpen] = useState(false);
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  
+  const handleQuickAction = (action) => {
+    switch(action) {
+      case 'New Lead':
+        setLeadModalOpen(true);
+        break;
+      case 'Create Quote':
+        setQuoteModalOpen(true);
+        break;
+      case 'Send Invoice':
+        setInvoiceModalOpen(true);
+        break;
+      case 'Schedule Meeting':
+        toast.success('Opening calendar to schedule meeting...');
+        break;
+      case 'Generate Report':
+        toast.success('Generating comprehensive report...');
+        break;
+      case 'AI Analysis':
+        toast.success('Running AI analysis on your data...');
+        break;
+      case 'Security Scan':
+        toast.success('Initiating security scan...');
+        break;
+      case 'Backup Data':
+        toast.success('Starting data backup process...');
+        break;
+      default:
+        toast.info(`Opening ${action}...`);
+    }
+  };
   const metrics = [
     {
       title: 'Total Revenue',
