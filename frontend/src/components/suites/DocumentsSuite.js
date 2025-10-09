@@ -163,8 +163,57 @@ const DocumentsSuite = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Documents Table */}
+          <Card className='bg-card border-border mt-6'>
+            <CardHeader>
+              <CardTitle>All Documents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className='flex justify-center py-8'>
+                  <Loader2 className='h-8 w-8 animate-spin' />
+                </div>
+              ) : documents.length === 0 ? (
+                <div className='text-center py-8 text-muted-foreground'>
+                  <p>No documents yet. Upload or create your first document!</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Size</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documents.map((doc) => (
+                      <TableRow key={doc.id}>
+                        <TableCell className='font-medium'>{doc.name}</TableCell>
+                        <TableCell>{doc.file_type}</TableCell>
+                        <TableCell>{doc.category}</TableCell>
+                        <TableCell>{(doc.file_size / 1000).toFixed(0)} KB</TableCell>
+                        <TableCell>{format(new Date(doc.created_at), 'MMM dd')}</TableCell>
+                        <TableCell>
+                          <Button size='sm' variant='ghost' onClick={() => handleDelete(doc.id)}>
+                            <Trash2 className='h-4 w-4' />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
+
+      <NewDocumentModal open={newDocOpen} onOpenChange={setNewDocOpen} onSuccess={fetchDocuments} />
     </div>
   );
 };
