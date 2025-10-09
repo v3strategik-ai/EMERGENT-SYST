@@ -78,7 +78,7 @@ const SalesSuite = () => {
         </CardHeader>
         <CardContent>
           <div className='flex space-x-4 mb-6'>
-            <Button className='bg-green-600 hover:bg-green-700'>
+            <Button className='bg-green-600 hover:bg-green-700' onClick={() => setNewDealOpen(true)}>
               <Plus className='h-4 w-4 mr-2' />
               New Deal
               <Badge variant='secondary' className='ml-2'>7</Badge>
