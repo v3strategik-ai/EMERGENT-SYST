@@ -1,9 +1,24 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { BarChart3, TrendingUp, DollarSign, Activity, Download, Share2 } from 'lucide-react';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+import { BarChart3, TrendingUp, DollarSign, Activity, Download, Share2, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AnalyticsSuite = () => {
+  const [newDashboardOpen, setNewDashboardOpen] = useState(false);
+  const [dashboardName, setDashboardName] = useState('');
+
+  const handleCreateDashboard = () => {
+    if (dashboardName.trim()) {
+      toast.success(`Dashboard "${dashboardName}" created successfully!`);
+      setNewDashboardOpen(false);
+      setDashboardName('');
+    }
+  };
   const metrics = [
     { title: 'Total Analytics', value: '2,847', change: '+156 this month', icon: BarChart3, color: 'text-blue-500' },
     { title: 'Active Dashboards', value: '23', change: '+5 new', icon: Activity, color: 'text-green-500' },
