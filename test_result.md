@@ -118,7 +118,7 @@ backend:
           comment: "Login and registration forms timeout on frontend, redirects back to landing page. Backend APIs may not be responding properly."
         - working: true
           agent: "testing"
-          comment: "BACKEND TESTING COMPLETE: All authentication APIs working perfectly. Tested user registration, login, token validation, and admin access. All endpoints return proper responses with 100% success rate. Frontend timeout issues are NOT caused by backend problems."
+          comment: "Backend authentication APIs working perfectly. All endpoints tested successfully. Issue is in frontend authentication flow."
 
   - task: "CRM Suite Backend APIs"
     implemented: true
