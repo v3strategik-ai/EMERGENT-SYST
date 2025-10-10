@@ -1,0 +1,652 @@
+#!/usr/bin/env python3
+"""
+Comprehensive Backend API Testing for Agentik Solutions
+Tests all authentication and suite functionality
+"""
+
+import requests
+import json
+import sys
+from datetime import datetime
+import uuid
+
+# Configuration
+BASE_URL = "https://agentik-bi-platform.preview.emergentagent.com/api"
+TEST_USER_DATA = {
+    "email": "test@agentik.com",
+    "password": "test123456",
+    "name": "Test User",
+    "role": "employee"
+}
+
+TEST_ADMIN_DATA = {
+    "email": "admin@agentik.com", 
+    "password": "admin123456",
+    "name": "Admin User",
+    "role": "admin"
+}
+
+class BackendTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.auth_token = None
+        self.admin_token = None
+        self.test_results = []
+        self.created_resources = []
+        
+    def log_result(self, test_name, success, message, details=None):
+        """Log test result"""
+        result = {
+            "test": test_name,
+            "success": success,
+            "message": message,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status}: {test_name} - {message}")
+        if details and not success:
+            print(f"   Details: {details}")
+    
+    def make_request(self, method, endpoint, data=None, headers=None, auth_required=True):
+        """Make HTTP request with proper error handling"""
+        url = f"{BASE_URL}{endpoint}"
+        
+        # Set up headers
+        req_headers = {"Content-Type": "application/json"}
+        if headers:
+            req_headers.update(headers)
+        
+        # Add auth token if required and available
+        if auth_required and self.auth_token:
+            req_headers["Authorization"] = f"Bearer {self.auth_token}"
+        
+        try:
+            if method.upper() == "GET":
+                response = self.session.get(url, headers=req_headers, timeout=30)
+            elif method.upper() == "POST":
+                response = self.session.post(url, json=data, headers=req_headers, timeout=30)
+            elif method.upper() == "PUT":
+                response = self.session.put(url, json=data, headers=req_headers, timeout=30)
+            elif method.upper() == "DELETE":
+                response = self.session.delete(url, headers=req_headers, timeout=30)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
+            
+            return response
+        except requests.exceptions.Timeout:
+            return None
+        except requests.exceptions.ConnectionError:
+            return None
+        except Exception as e:
+            print(f"Request error: {str(e)}")
+            return None
+    
+    def test_health_check(self):
+        """Test basic health endpoint"""
+        print("\n=== TESTING HEALTH CHECK ===")
+        
+        response = self.make_request("GET", "/health", auth_required=False)
+        if response is None:
+            self.log_result("Health Check", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                self.log_result("Health Check", True, f"API is healthy - {data.get('status')}")
+                return True
+            except:
+                self.log_result("Health Check", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Health Check", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+    
+    def test_authentication(self):
+        """Test authentication endpoints"""
+        print("\n=== TESTING AUTHENTICATION ===")
+        
+        # Test user registration
+        response = self.make_request("POST", "/auth/register", TEST_USER_DATA, auth_required=False)
+        if response is None:
+            self.log_result("User Registration", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                self.auth_token = data.get("access_token")
+                self.log_result("User Registration", True, f"User registered successfully")
+            except:
+                self.log_result("User Registration", False, "Invalid JSON response")
+                return False
+        elif response.status_code == 400:
+            # User might already exist, try login
+            self.log_result("User Registration", True, "User already exists (expected)")
+        else:
+            self.log_result("User Registration", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test user login
+        login_data = {"email": TEST_USER_DATA["email"], "password": TEST_USER_DATA["password"]}
+        response = self.make_request("POST", "/auth/login", login_data, auth_required=False)
+        if response is None:
+            self.log_result("User Login", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                self.auth_token = data.get("access_token")
+                user_info = data.get("user", {})
+                self.log_result("User Login", True, f"Login successful for {user_info.get('name')}")
+            except:
+                self.log_result("User Login", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("User Login", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get current user
+        response = self.make_request("GET", "/auth/me")
+        if response is None:
+            self.log_result("Get Current User", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                user_data = response.json()
+                self.log_result("Get Current User", True, f"Retrieved user: {user_data.get('name')}")
+            except:
+                self.log_result("Get Current User", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Current User", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test admin registration and login
+        response = self.make_request("POST", "/auth/register", TEST_ADMIN_DATA, auth_required=False)
+        if response and response.status_code in [200, 400]:  # 400 if already exists
+            admin_login = {"email": TEST_ADMIN_DATA["email"], "password": TEST_ADMIN_DATA["password"]}
+            response = self.make_request("POST", "/auth/login", admin_login, auth_required=False)
+            if response and response.status_code == 200:
+                try:
+                    data = response.json()
+                    self.admin_token = data.get("access_token")
+                    self.log_result("Admin Login", True, "Admin login successful")
+                except:
+                    self.log_result("Admin Login", False, "Invalid JSON response")
+            else:
+                self.log_result("Admin Login", False, f"HTTP {response.status_code if response else 'No response'}")
+        
+        return self.auth_token is not None
+    
+    def test_crm_suite(self):
+        """Test CRM Suite APIs"""
+        print("\n=== TESTING CRM SUITE ===")
+        
+        if not self.auth_token:
+            self.log_result("CRM Suite", False, "No authentication token available")
+            return False
+        
+        # Test create lead
+        lead_data = {
+            "name": "John Smith",
+            "email": "john.smith@example.com",
+            "company": "Tech Corp",
+            "phone": "+1-555-0123",
+            "value": 50000.0,
+            "source": "Website"
+        }
+        
+        response = self.make_request("POST", "/crm/leads", lead_data)
+        if response is None:
+            self.log_result("Create Lead", False, "Connection timeout or error")
+            return False
+        
+        lead_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                lead_id = data.get("id")
+                self.created_resources.append(("lead", lead_id))
+                self.log_result("Create Lead", True, f"Lead created with ID: {lead_id}")
+            except:
+                self.log_result("Create Lead", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Lead", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get leads
+        response = self.make_request("GET", "/crm/leads")
+        if response is None:
+            self.log_result("Get Leads", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                leads = response.json()
+                self.log_result("Get Leads", True, f"Retrieved {len(leads)} leads")
+            except:
+                self.log_result("Get Leads", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Leads", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test update lead
+        if lead_id:
+            update_data = {"status": "Qualified", "value": 75000.0}
+            response = self.make_request("PUT", f"/crm/leads/{lead_id}", update_data)
+            if response and response.status_code == 200:
+                self.log_result("Update Lead", True, "Lead updated successfully")
+            else:
+                self.log_result("Update Lead", False, f"HTTP {response.status_code if response else 'No response'}")
+        
+        return True
+    
+    def test_automation_suite(self):
+        """Test Automation Suite APIs"""
+        print("\n=== TESTING AUTOMATION SUITE ===")
+        
+        if not self.auth_token:
+            self.log_result("Automation Suite", False, "No authentication token available")
+            return False
+        
+        # Test create workflow
+        workflow_data = {
+            "name": "Daily Lead Follow-up",
+            "description": "Automatically follow up with new leads",
+            "trigger_type": "Time-based",
+            "action_type": "Send Email",
+            "frequency": "Daily"
+        }
+        
+        response = self.make_request("POST", "/automation/workflows", workflow_data)
+        if response is None:
+            self.log_result("Create Workflow", False, "Connection timeout or error")
+            return False
+        
+        workflow_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                workflow_id = data.get("id")
+                self.created_resources.append(("workflow", workflow_id))
+                self.log_result("Create Workflow", True, f"Workflow created with ID: {workflow_id}")
+            except:
+                self.log_result("Create Workflow", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Workflow", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get workflows
+        response = self.make_request("GET", "/automation/workflows")
+        if response is None:
+            self.log_result("Get Workflows", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                workflows = response.json()
+                self.log_result("Get Workflows", True, f"Retrieved {len(workflows)} workflows")
+            except:
+                self.log_result("Get Workflows", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Workflows", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        return True
+    
+    def test_cpq_suite(self):
+        """Test CPQ Suite APIs"""
+        print("\n=== TESTING CPQ SUITE ===")
+        
+        if not self.auth_token:
+            self.log_result("CPQ Suite", False, "No authentication token available")
+            return False
+        
+        # Test create quote
+        quote_data = {
+            "client_name": "ABC Corporation",
+            "client_email": "contact@abc-corp.com",
+            "items": [
+                {"name": "Software License", "quantity": 10, "price": 100.0},
+                {"name": "Support Package", "quantity": 1, "price": 500.0}
+            ],
+            "tax_rate": 0.08
+        }
+        
+        response = self.make_request("POST", "/cpq/quotes", quote_data)
+        if response is None:
+            self.log_result("Create Quote", False, "Connection timeout or error")
+            return False
+        
+        quote_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                quote_id = data.get("id")
+                self.created_resources.append(("quote", quote_id))
+                self.log_result("Create Quote", True, f"Quote created with ID: {quote_id}")
+            except:
+                self.log_result("Create Quote", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Quote", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get quotes
+        response = self.make_request("GET", "/cpq/quotes")
+        if response is None:
+            self.log_result("Get Quotes", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                quotes = response.json()
+                self.log_result("Get Quotes", True, f"Retrieved {len(quotes)} quotes")
+            except:
+                self.log_result("Get Quotes", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Quotes", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        return True
+    
+    def test_documents_suite(self):
+        """Test Documents Suite APIs"""
+        print("\n=== TESTING DOCUMENTS SUITE ===")
+        
+        if not self.auth_token:
+            self.log_result("Documents Suite", False, "No authentication token available")
+            return False
+        
+        # Test create document
+        doc_data = {
+            "name": "Sales Proposal Template",
+            "file_type": "PDF",
+            "file_size": 1024000,
+            "category": "Templates",
+            "template_used": "Standard Proposal"
+        }
+        
+        response = self.make_request("POST", "/documents", doc_data)
+        if response is None:
+            self.log_result("Create Document", False, "Connection timeout or error")
+            return False
+        
+        doc_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                doc_id = data.get("id")
+                self.created_resources.append(("document", doc_id))
+                self.log_result("Create Document", True, f"Document created with ID: {doc_id}")
+            except:
+                self.log_result("Create Document", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Document", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get documents
+        response = self.make_request("GET", "/documents")
+        if response is None:
+            self.log_result("Get Documents", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                documents = response.json()
+                self.log_result("Get Documents", True, f"Retrieved {len(documents)} documents")
+            except:
+                self.log_result("Get Documents", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Documents", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        return True
+    
+    def test_payments_suite(self):
+        """Test Payments Suite APIs"""
+        print("\n=== TESTING PAYMENTS SUITE ===")
+        
+        if not self.auth_token:
+            self.log_result("Payments Suite", False, "No authentication token available")
+            return False
+        
+        # Test create transaction
+        trans_data = {
+            "customer_name": "Jane Doe",
+            "customer_email": "jane.doe@example.com",
+            "amount": 1500.00,
+            "gateway": "Stripe",
+            "payment_method": "Credit Card"
+        }
+        
+        response = self.make_request("POST", "/payments/transactions", trans_data)
+        if response is None:
+            self.log_result("Create Transaction", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                trans_id = data.get("id")
+                self.created_resources.append(("transaction", trans_id))
+                self.log_result("Create Transaction", True, f"Transaction created with ID: {trans_id}")
+            except:
+                self.log_result("Create Transaction", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Transaction", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get transactions
+        response = self.make_request("GET", "/payments/transactions")
+        if response is None:
+            self.log_result("Get Transactions", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                transactions = response.json()
+                self.log_result("Get Transactions", True, f"Retrieved {len(transactions)} transactions")
+            except:
+                self.log_result("Get Transactions", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Transactions", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        return True
+    
+    def test_ai_copilot(self):
+        """Test AI Copilot Integration"""
+        print("\n=== TESTING AI COPILOT ===")
+        
+        if not self.auth_token:
+            self.log_result("AI Copilot", False, "No authentication token available")
+            return False
+        
+        # Test AI query
+        query_data = {
+            "query": "What are the key metrics for our sales performance this quarter?",
+            "session_id": str(uuid.uuid4())
+        }
+        
+        response = self.make_request("POST", "/ai/query", query_data)
+        if response is None:
+            self.log_result("AI Query", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                ai_response = data.get("response", "")
+                self.log_result("AI Query", True, f"AI responded with {len(ai_response)} characters")
+            except:
+                self.log_result("AI Query", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("AI Query", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test AI data analysis
+        analysis_data = {
+            "data": {"revenue": 100000, "customers": 250, "conversion_rate": 0.15},
+            "question": "What insights can you provide about our business performance?"
+        }
+        
+        response = self.make_request("POST", "/ai/analyze", analysis_data)
+        if response is None:
+            self.log_result("AI Data Analysis", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                analysis = data.get("analysis", "")
+                self.log_result("AI Data Analysis", True, f"Analysis completed with {len(analysis)} characters")
+            except:
+                self.log_result("AI Data Analysis", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("AI Data Analysis", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        return True
+    
+    def test_admin_endpoints(self):
+        """Test Admin-only endpoints"""
+        print("\n=== TESTING ADMIN ENDPOINTS ===")
+        
+        if not self.admin_token:
+            self.log_result("Admin Endpoints", False, "No admin token available")
+            return False
+        
+        # Temporarily switch to admin token
+        original_token = self.auth_token
+        self.auth_token = self.admin_token
+        
+        # Test get all users
+        response = self.make_request("GET", "/admin/users")
+        if response is None:
+            self.log_result("Get All Users", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                users = response.json()
+                self.log_result("Get All Users", True, f"Retrieved {len(users)} users")
+            except:
+                self.log_result("Get All Users", False, "Invalid JSON response")
+        else:
+            self.log_result("Get All Users", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test analytics
+        response = self.make_request("GET", "/admin/analytics")
+        if response is None:
+            self.log_result("Get Analytics", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                analytics = response.json()
+                self.log_result("Get Analytics", True, f"Analytics retrieved: {analytics.get('total_users', 0)} users")
+            except:
+                self.log_result("Get Analytics", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Analytics", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Restore original token
+        self.auth_token = original_token
+        return True
+    
+    def cleanup_resources(self):
+        """Clean up created test resources"""
+        print("\n=== CLEANING UP TEST RESOURCES ===")
+        
+        for resource_type, resource_id in self.created_resources:
+            if resource_type == "lead":
+                response = self.make_request("DELETE", f"/crm/leads/{resource_id}")
+            elif resource_type == "workflow":
+                response = self.make_request("DELETE", f"/automation/workflows/{resource_id}")
+            elif resource_type == "quote":
+                response = self.make_request("DELETE", f"/cpq/quotes/{resource_id}")
+            elif resource_type == "document":
+                response = self.make_request("DELETE", f"/documents/{resource_id}")
+            elif resource_type == "transaction":
+                # Transactions typically can't be deleted, skip
+                continue
+            
+            if response and response.status_code == 200:
+                print(f"✅ Cleaned up {resource_type}: {resource_id}")
+            else:
+                print(f"⚠️  Failed to clean up {resource_type}: {resource_id}")
+    
+    def run_all_tests(self):
+        """Run all backend tests"""
+        print("🚀 Starting Agentik Solutions Backend API Tests")
+        print(f"🔗 Testing against: {BASE_URL}")
+        print("=" * 60)
+        
+        # Run tests in order
+        tests = [
+            ("Health Check", self.test_health_check),
+            ("Authentication", self.test_authentication),
+            ("CRM Suite", self.test_crm_suite),
+            ("Automation Suite", self.test_automation_suite),
+            ("CPQ Suite", self.test_cpq_suite),
+            ("Documents Suite", self.test_documents_suite),
+            ("Payments Suite", self.test_payments_suite),
+            ("AI Copilot", self.test_ai_copilot),
+            ("Admin Endpoints", self.test_admin_endpoints)
+        ]
+        
+        for test_name, test_func in tests:
+            try:
+                test_func()
+            except Exception as e:
+                self.log_result(test_name, False, f"Test failed with exception: {str(e)}")
+        
+        # Cleanup
+        self.cleanup_resources()
+        
+        # Print summary
+        self.print_summary()
+    
+    def print_summary(self):
+        """Print test summary"""
+        print("\n" + "=" * 60)
+        print("📊 TEST SUMMARY")
+        print("=" * 60)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        
+        if failed_tests > 0:
+            print("\n🔍 FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"  ❌ {result['test']}: {result['message']}")
+        
+        print("\n" + "=" * 60)
+        
+        # Return success status
+        return failed_tests == 0
+
+if __name__ == "__main__":
+    tester = BackendTester()
+    success = tester.run_all_tests()
+    sys.exit(0 if success else 1)
