@@ -28,12 +28,8 @@ const Register = () => {
       const user = await register(formData);
       toast.success('Account created successfully!');
       
-      // Navigate based on role
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/employee');
-      }
+      // Navigate to platform regardless of role
+      navigate('/platform');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
