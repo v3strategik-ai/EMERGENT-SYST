@@ -212,8 +212,8 @@ test_plan:
     - "Suite Button Functionality"
   stuck_tasks:
     - "Authentication Flow (Login/Register)"
-  test_all: false
-  test_priority: "high_first"
+  test_all: true
+  test_priority: "stuck_first"
 
 agent_communication:
     - agent: "main"
