@@ -153,14 +153,14 @@ backend:
   - task: "AI Copilot Integration"
     implemented: true
     working: true
-    file: "backend/server.py, backend/ai_copilot.py"
+    file: "backend/ai_copilot.py"
     stuck_count: 0
-    priority: "high"
+    priority: "medium"
     needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
-          comment: "AI Copilot fully functional: Query processing, data analysis, and report generation all working correctly with proper LLM integration. Tested with business queries and data analysis requests - all responding correctly."
+          comment: "Query processing and data analysis working correctly with Emergent LLM integration"
 
 frontend:
   - task: "Authentication Flow (Login/Register)"
