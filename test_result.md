@@ -207,9 +207,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Authentication APIs (Login/Register)"
-    - "Backend API endpoints validation"
     - "Frontend authentication flow"
+    - "Dashboard Quick Actions"
+    - "Suite Button Functionality"
   stuck_tasks:
     - "Authentication Flow (Login/Register)"
   test_all: false
