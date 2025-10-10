@@ -25,12 +25,8 @@ const Login = () => {
       const user = await login(formData);
       toast.success('Welcome back!');
       
-      // Navigate based on role
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/employee');
-      }
+      // Navigate to platform regardless of role
+      navigate('/platform');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Login failed. Please try again.');
     } finally {
