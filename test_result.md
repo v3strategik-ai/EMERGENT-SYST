@@ -133,7 +133,7 @@ backend:
           comment: "Need to test after authentication is fixed"
         - working: true
           agent: "testing"
-          comment: "CRM APIs fully functional: Create/Read/Update/Delete leads working correctly. Tested with real data, proper validation, and user permissions. All endpoints responding with 200 OK."
+          comment: "Full CRUD operations functional for CRM leads endpoints"
 
   - task: "All Suite CRUD Operations"
     implemented: true
