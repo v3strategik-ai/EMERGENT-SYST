@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -25,6 +25,7 @@ import {
   Cloud as CloudIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
+import api from '../../utils/api';
 
 const IntegrationsSuite = () => {
   const [selectedIntegration, setSelectedIntegration] = useState(null);
