@@ -5,7 +5,7 @@ import { Badge } from '../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { TrendingUp, Target, Users, DollarSign, Plus, Download, Share2, Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { crmAPI } from '../../utils/crmAPI';
+import { salesAPI } from '../../utils/crmAPI';
 import NewLeadModal from '../modals/NewLeadModal';
 import { format } from 'date-fns';
 
