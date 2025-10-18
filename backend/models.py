@@ -1,7 +1,18 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
+
+# ==================== USER MODELS ====================
+
+class User(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    name: str
+    role: str  # "employee" or "admin"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # ==================== CRM MODELS ====================
 
