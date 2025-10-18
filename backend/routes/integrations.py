@@ -285,15 +285,18 @@ async def sync_all_integrations(
         logger.error(f"Error starting full sync: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to start full sync")
 
+class TeamNotificationRequest(BaseModel):
+    message: str
+    channel: str = "general"
+
 @router.post("/workflows/team-notification")
 async def send_team_notification(
-    message: str,
-    channel: str = "general",
+    request: TeamNotificationRequest,
     current_user: User = Depends(get_current_user)
 ):
     """Send notification to team via Slack"""
     try:
-        result = await integration_manager.send_team_update(message, channel)
+        result = await integration_manager.send_team_update(request.message, request.channel)
         return result
     except Exception as e:
         logger.error(f"Error sending team notification: {str(e)}")
