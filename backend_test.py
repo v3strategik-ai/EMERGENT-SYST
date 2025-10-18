@@ -525,6 +525,214 @@ class BackendTester:
         
         return True
     
+    def test_sales_suite(self):
+        """Test Sales Suite APIs (NEWLY IMPLEMENTED)"""
+        print("\n=== TESTING SALES SUITE (NEW) ===")
+        
+        if not self.auth_token:
+            self.log_result("Sales Suite", False, "No authentication token available")
+            return False
+        
+        # Test create deal
+        deal_data = {
+            "name": "Enterprise Software Deal",
+            "company": "Global Tech Solutions",
+            "value": 250000.0,
+            "status": "Prospecting",
+            "source": "Referral",
+            "probability": 75
+        }
+        
+        response = self.make_request("POST", "/sales/deals", deal_data)
+        if response is None:
+            self.log_result("Create Deal", False, "Connection timeout or error")
+            return False
+        
+        deal_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                deal_id = data.get("id")
+                self.created_resources.append(("deal", deal_id))
+                self.log_result("Create Deal", True, f"Deal created with ID: {deal_id}")
+            except:
+                self.log_result("Create Deal", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Deal", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get deals
+        response = self.make_request("GET", "/sales/deals")
+        if response is None:
+            self.log_result("Get Deals", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                deals = response.json()
+                self.log_result("Get Deals", True, f"Retrieved {len(deals)} deals")
+            except:
+                self.log_result("Get Deals", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Deals", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test update deal
+        if deal_id:
+            update_data = {"status": "Qualified", "probability": 85}
+            response = self.make_request("PUT", f"/sales/deals/{deal_id}", update_data)
+            if response and response.status_code == 200:
+                self.log_result("Update Deal", True, "Deal updated successfully")
+            else:
+                self.log_result("Update Deal", False, f"HTTP {response.status_code if response else 'No response'}")
+        
+        return True
+    
+    def test_finance_suite(self):
+        """Test Finance Suite APIs (NEWLY IMPLEMENTED)"""
+        print("\n=== TESTING FINANCE SUITE (NEW) ===")
+        
+        if not self.auth_token:
+            self.log_result("Finance Suite", False, "No authentication token available")
+            return False
+        
+        # Test create finance report
+        report_data = {
+            "name": "Q1 2025 P&L Report",
+            "report_type": "P&L",
+            "period": "Quarterly",
+            "data": {
+                "revenue": 500000,
+                "expenses": 350000,
+                "profit": 150000,
+                "margin": 30.0
+            }
+        }
+        
+        response = self.make_request("POST", "/finance/reports", report_data)
+        if response is None:
+            self.log_result("Create Finance Report", False, "Connection timeout or error")
+            return False
+        
+        report_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                report_id = data.get("id")
+                self.created_resources.append(("finance_report", report_id))
+                self.log_result("Create Finance Report", True, f"Finance report created with ID: {report_id}")
+            except:
+                self.log_result("Create Finance Report", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Finance Report", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get finance reports
+        response = self.make_request("GET", "/finance/reports")
+        if response is None:
+            self.log_result("Get Finance Reports", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                reports = response.json()
+                self.log_result("Get Finance Reports", True, f"Retrieved {len(reports)} finance reports")
+            except:
+                self.log_result("Get Finance Reports", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Finance Reports", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test update finance report
+        if report_id:
+            update_data = {"status": "Approved"}
+            response = self.make_request("PUT", f"/finance/reports/{report_id}", update_data)
+            if response and response.status_code == 200:
+                self.log_result("Update Finance Report", True, "Finance report updated successfully")
+            else:
+                self.log_result("Update Finance Report", False, f"HTTP {response.status_code if response else 'No response'}")
+        
+        return True
+    
+    def test_analytics_suite(self):
+        """Test Analytics Suite APIs (NEWLY IMPLEMENTED)"""
+        print("\n=== TESTING ANALYTICS SUITE (NEW) ===")
+        
+        if not self.auth_token:
+            self.log_result("Analytics Suite", False, "No authentication token available")
+            return False
+        
+        # Test create analytics dashboard
+        dashboard_data = {
+            "name": "Executive Dashboard",
+            "dashboard_type": "Real-time",
+            "widgets": [
+                {"type": "chart", "title": "Sales Performance", "data_source": "sales"},
+                {"type": "metric", "title": "Revenue", "data_source": "finance"}
+            ],
+            "config": {
+                "refresh_interval": 300,
+                "theme": "dark"
+            }
+        }
+        
+        response = self.make_request("POST", "/analytics/dashboards", dashboard_data)
+        if response is None:
+            self.log_result("Create Analytics Dashboard", False, "Connection timeout or error")
+            return False
+        
+        dashboard_id = None
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                dashboard_id = data.get("id")
+                self.created_resources.append(("analytics_dashboard", dashboard_id))
+                self.log_result("Create Analytics Dashboard", True, f"Analytics dashboard created with ID: {dashboard_id}")
+            except:
+                self.log_result("Create Analytics Dashboard", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Create Analytics Dashboard", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test get analytics dashboards
+        response = self.make_request("GET", "/analytics/dashboards")
+        if response is None:
+            self.log_result("Get Analytics Dashboards", False, "Connection timeout or error")
+            return False
+        
+        if response.status_code == 200:
+            try:
+                dashboards = response.json()
+                self.log_result("Get Analytics Dashboards", True, f"Retrieved {len(dashboards)} analytics dashboards")
+            except:
+                self.log_result("Get Analytics Dashboards", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_result("Get Analytics Dashboards", False, f"HTTP {response.status_code}: {response.text}")
+            return False
+        
+        # Test analytics data endpoints
+        data_types = ["sales", "crm", "finance"]
+        for data_type in data_types:
+            response = self.make_request("GET", f"/analytics/data/{data_type}")
+            if response is None:
+                self.log_result(f"Get Analytics Data ({data_type})", False, "Connection timeout or error")
+            elif response.status_code == 200:
+                try:
+                    data = response.json()
+                    self.log_result(f"Get Analytics Data ({data_type})", True, f"Retrieved {data_type} analytics data")
+                except:
+                    self.log_result(f"Get Analytics Data ({data_type})", False, "Invalid JSON response")
+            else:
+                self.log_result(f"Get Analytics Data ({data_type})", False, f"HTTP {response.status_code}: {response.text}")
+        
+        return True
+    
     def test_admin_endpoints(self):
         """Test Admin-only endpoints"""
         print("\n=== TESTING ADMIN ENDPOINTS ===")
