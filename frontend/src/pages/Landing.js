@@ -25,7 +25,7 @@ const Landing = () => {
               <img 
                 src="/agentik-logo.png" 
                 alt="Agentik Solutions" 
-                className="h-10 w-auto object-contain"
+                className="h-12 w-auto object-contain"
               />
               <span className="font-bold text-2xl text-gray-900">Agentik Solutions</span>
             </div>
