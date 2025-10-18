@@ -907,6 +907,7 @@ async def health_check():
 
 # Include the router in the main app
 app.include_router(api_router)
+app.include_router(integrations.router)
 
 app.add_middleware(
     CORSMiddleware,
