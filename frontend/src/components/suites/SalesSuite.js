@@ -31,7 +31,7 @@ const SalesSuite = () => {
 
   const handleDelete = async (id) => {
     try {
-      await crmAPI.deleteLead(id);
+      await salesAPI.deleteDeal(id);
       toast.success('Deal deleted');
       fetchDeals();
     } catch (error) {
