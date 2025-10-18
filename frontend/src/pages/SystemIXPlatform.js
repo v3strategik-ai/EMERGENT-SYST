@@ -15,6 +15,7 @@ import CPQSuite from '../components/suites/CPQSuite';
 import FinanceSuite from '../components/suites/FinanceSuite';
 import DocumentsSuite from '../components/suites/DocumentsSuite';
 import PaymentsSuite from '../components/suites/PaymentsSuite';
+import IntegrationsSuite from '../components/suites/IntegrationsSuite';
 
 const SystemIXPlatform = () => {
   const { user } = useAuth();
