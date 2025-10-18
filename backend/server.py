@@ -654,6 +654,246 @@ async def get_transactions(current_user: User = Depends(get_current_user)):
             transaction['created_at'] = datetime.fromisoformat(transaction['created_at'])
     return transactions
 
+# ==================== SALES SUITE MODELS ====================
+
+class DealCreate(BaseModel):
+    name: str
+    company: str
+    value: float
+    status: str = "Prospecting"
+    source: str
+    close_date: Optional[date] = None
+    probability: Optional[int] = 50
+
+class Deal(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    company: str
+    value: float
+    status: str
+    source: str
+    close_date: Optional[date]
+    probability: int
+    assigned_to: str
+    user_id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class DealUpdate(BaseModel):
+    name: Optional[str] = None
+    company: Optional[str] = None
+    value: Optional[float] = None
+    status: Optional[str] = None
+    source: Optional[str] = None
+    close_date: Optional[date] = None
+    probability: Optional[int] = None
+
+# ==================== SALES SUITE ENDPOINTS ====================
+
+@api_router.post("/sales/deals", response_model=Deal)
+async def create_deal(deal_data: DealCreate, current_user: User = Depends(get_current_user)):
+    deal = Deal(
+        **deal_data.model_dump(),
+        assigned_to=current_user.name,
+        user_id=current_user.id
+    )
+    doc = deal.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    if doc.get('close_date'):
+        doc['close_date'] = doc['close_date'].isoformat()
+    await db.deals.insert_one(doc)
+    return deal
+
+@api_router.get("/sales/deals", response_model=List[Deal])
+async def get_deals(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    deals = await db.deals.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for deal in deals:
+        if isinstance(deal.get('created_at'), str):
+            deal['created_at'] = datetime.fromisoformat(deal['created_at'])
+        if isinstance(deal.get('updated_at'), str):
+            deal['updated_at'] = datetime.fromisoformat(deal['updated_at'])
+        if deal.get('close_date') and isinstance(deal['close_date'], str):
+            deal['close_date'] = datetime.fromisoformat(deal['close_date']).date()
+    return deals
+
+@api_router.put("/sales/deals/{deal_id}", response_model=Deal)
+async def update_deal(deal_id: str, update_data: DealUpdate, current_user: User = Depends(get_current_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    update_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
+    if update_dict.get('close_date'):
+        update_dict['close_date'] = update_dict['close_date'].isoformat()
+    await db.deals.update_one({"id": deal_id}, {"$set": update_dict})
+    updated = await db.deals.find_one({"id": deal_id}, {"_id": 0})
+    if updated:
+        if isinstance(updated.get('created_at'), str):
+            updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+        if isinstance(updated.get('updated_at'), str):
+            updated['updated_at'] = datetime.fromisoformat(updated['updated_at'])
+        if updated.get('close_date') and isinstance(updated['close_date'], str):
+            updated['close_date'] = datetime.fromisoformat(updated['close_date']).date()
+        return Deal(**updated)
+    raise HTTPException(status_code=404, detail="Deal not found")
+
+@api_router.delete("/sales/deals/{deal_id}")
+async def delete_deal(deal_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.deals.delete_one({"id": deal_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Deal not found")
+    return {"message": "Deal deleted successfully"}
+
+# ==================== FINANCE SUITE MODELS ====================
+
+class ReportCreate(BaseModel):
+    name: str
+    report_type: str  # 'P&L', 'Cash Flow', 'Balance Sheet', 'Budget'
+    period: str  # 'Monthly', 'Quarterly', 'Yearly'
+    data: dict
+
+class FinanceReport(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    report_type: str
+    period: str
+    data: dict
+    status: str = "Generated"
+    user_id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ReportUpdate(BaseModel):
+    name: Optional[str] = None
+    status: Optional[str] = None
+    data: Optional[dict] = None
+
+# ==================== FINANCE SUITE ENDPOINTS ====================
+
+@api_router.post("/finance/reports", response_model=FinanceReport)
+async def create_finance_report(report_data: ReportCreate, current_user: User = Depends(get_current_user)):
+    report = FinanceReport(
+        **report_data.model_dump(),
+        user_id=current_user.id
+    )
+    doc = report.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.finance_reports.insert_one(doc)
+    return report
+
+@api_router.get("/finance/reports", response_model=List[FinanceReport])
+async def get_finance_reports(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    reports = await db.finance_reports.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for report in reports:
+        if isinstance(report.get('created_at'), str):
+            report['created_at'] = datetime.fromisoformat(report['created_at'])
+    return reports
+
+@api_router.put("/finance/reports/{report_id}", response_model=FinanceReport)
+async def update_finance_report(report_id: str, update_data: ReportUpdate, current_user: User = Depends(get_current_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    await db.finance_reports.update_one({"id": report_id}, {"$set": update_dict})
+    updated = await db.finance_reports.find_one({"id": report_id}, {"_id": 0})
+    if updated:
+        if isinstance(updated.get('created_at'), str):
+            updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+        return FinanceReport(**updated)
+    raise HTTPException(status_code=404, detail="Report not found")
+
+@api_router.delete("/finance/reports/{report_id}")
+async def delete_finance_report(report_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.finance_reports.delete_one({"id": report_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return {"message": "Report deleted successfully"}
+
+# ==================== ANALYTICS SUITE MODELS ====================
+
+class DashboardCreate(BaseModel):
+    name: str
+    dashboard_type: str  # 'Real-time', 'Daily', 'Weekly', 'Custom'
+    widgets: List[dict] = []
+    config: dict = {}
+
+class AnalyticsDashboard(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    dashboard_type: str
+    widgets: List[dict]
+    config: dict
+    active: bool = True
+    user_id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class DashboardUpdate(BaseModel):
+    name: Optional[str] = None
+    widgets: Optional[List[dict]] = None
+    config: Optional[dict] = None
+    active: Optional[bool] = None
+
+# ==================== ANALYTICS SUITE ENDPOINTS ====================
+
+@api_router.post("/analytics/dashboards", response_model=AnalyticsDashboard)
+async def create_analytics_dashboard(dashboard_data: DashboardCreate, current_user: User = Depends(get_current_user)):
+    dashboard = AnalyticsDashboard(
+        **dashboard_data.model_dump(),
+        user_id=current_user.id
+    )
+    doc = dashboard.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.analytics_dashboards.insert_one(doc)
+    return dashboard
+
+@api_router.get("/analytics/dashboards", response_model=List[AnalyticsDashboard])
+async def get_analytics_dashboards(current_user: User = Depends(get_current_user)):
+    query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+    dashboards = await db.analytics_dashboards.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for dashboard in dashboards:
+        if isinstance(dashboard.get('created_at'), str):
+            dashboard['created_at'] = datetime.fromisoformat(dashboard['created_at'])
+        if isinstance(dashboard.get('updated_at'), str):
+            dashboard['updated_at'] = datetime.fromisoformat(dashboard['updated_at'])
+    return dashboards
+
+@api_router.get("/analytics/data/{data_type}")
+async def get_analytics_data(data_type: str, current_user: User = Depends(get_current_user)):
+    """Get analytics data for various metrics"""
+    if data_type == "sales":
+        # Get sales analytics
+        query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+        deals = await db.deals.find(query, {"_id": 0}).to_list(1000)
+        total_value = sum(deal.get('value', 0) for deal in deals)
+        won_deals = [d for d in deals if d.get('status') == 'Closed Won']
+        return {
+            "total_deals": len(deals),
+            "total_value": total_value,
+            "won_deals": len(won_deals),
+            "conversion_rate": len(won_deals) / len(deals) * 100 if deals else 0
+        }
+    elif data_type == "crm":
+        # Get CRM analytics
+        query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+        leads = await db.leads.find(query, {"_id": 0}).to_list(1000)
+        qualified_leads = [l for l in leads if l.get('status') == 'Qualified']
+        return {
+            "total_leads": len(leads),
+            "qualified_leads": len(qualified_leads),
+            "qualification_rate": len(qualified_leads) / len(leads) * 100 if leads else 0
+        }
+    elif data_type == "finance":
+        # Get finance analytics
+        query = {} if current_user.role == "admin" else {"user_id": current_user.id}
+        transactions = await db.transactions.find(query, {"_id": 0}).to_list(1000)
+        total_revenue = sum(t.get('amount', 0) for t in transactions if t.get('status') == 'Completed')
+        return {
+            "total_transactions": len(transactions),
+            "total_revenue": total_revenue,
+            "avg_transaction": total_revenue / len(transactions) if transactions else 0
+        }
+    else:
+        return {"error": "Unknown data type"}
+
 # ==================== BASIC ENDPOINTS ====================
 
 @api_router.get("/")
