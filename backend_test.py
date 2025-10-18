@@ -788,6 +788,14 @@ class BackendTester:
                 response = self.make_request("DELETE", f"/cpq/quotes/{resource_id}")
             elif resource_type == "document":
                 response = self.make_request("DELETE", f"/documents/{resource_id}")
+            elif resource_type == "deal":
+                response = self.make_request("DELETE", f"/sales/deals/{resource_id}")
+            elif resource_type == "finance_report":
+                response = self.make_request("DELETE", f"/finance/reports/{resource_id}")
+            elif resource_type == "analytics_dashboard":
+                # Analytics dashboards don't have delete endpoint in the current implementation
+                print(f"⚠️  Analytics dashboard cleanup not implemented: {resource_id}")
+                continue
             elif resource_type == "transaction":
                 # Transactions typically can't be deleted, skip
                 continue
