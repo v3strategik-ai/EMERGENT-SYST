@@ -7,6 +7,7 @@ import { Label } from '../ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { BarChart3, TrendingUp, DollarSign, Activity, Download, Share2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { analyticsAPI } from '../../utils/crmAPI';
 
 const AnalyticsSuite = () => {
   const [newDashboardOpen, setNewDashboardOpen] = useState(false);
