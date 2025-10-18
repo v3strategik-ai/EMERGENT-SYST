@@ -86,7 +86,7 @@ const SystemIXPlatform = () => {
         <div className="border-b border-border bg-card">
           <div className="px-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-9 bg-transparent">
+              <TabsList className="grid w-full grid-cols-10 bg-transparent">
                 {tabs.map(tab => (
                   <TabsTrigger
                     key={tab.id}
