@@ -45,7 +45,7 @@ const Register = () => {
             <img 
               src="/agentik-logo.png" 
               alt="Agentik Solutions" 
-              className="h-16 w-auto object-contain"
+              className="h-20 w-auto object-contain"
             />
           </div>
           <CardTitle className="text-2xl">Create Account</CardTitle>
