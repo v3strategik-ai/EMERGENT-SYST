@@ -314,13 +314,27 @@ const IntegrationsSuite = () => {
               <Plus className='h-4 w-4 mr-2' />
               Add Integration
             </Button>
-            <Button variant='outline' onClick={() => toast.info('Running sync for all connected platforms...')}>
+            <Button 
+              variant='outline' 
+              onClick={async () => {
+                try {
+                  const response = await api.post('/integrations/workflows/sync-all');
+                  if (response.data.success) {
+                    toast.success('Sync started for all connected platforms');
+                    await fetchIntegrationStatuses();
+                    await fetchIntegrationMetrics();
+                  }
+                } catch (error) {
+                  toast.error('Failed to sync all platforms');
+                }
+              }}
+            >
               <Sync className='h-4 w-4 mr-2' />
               Sync All
             </Button>
-            <Button variant='outline' onClick={() => toast.info('Opening integration marketplace...')}>
+            <Button variant='outline' onClick={() => toast.info('Integration marketplace - Configure API keys in platform settings')}>
               <Settings className='h-4 w-4 mr-2' />
-              Marketplace
+              Settings
             </Button>
           </div>
 
