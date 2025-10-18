@@ -7,7 +7,7 @@ Tests all authentication and suite functionality
 import requests
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, date
 import uuid
 
 # Configuration
