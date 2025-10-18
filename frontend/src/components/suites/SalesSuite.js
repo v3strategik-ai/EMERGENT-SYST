@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { TrendingUp, Target, Users, DollarSign, Plus, Download, Share2, Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { salesAPI } from '../../utils/crmAPI';
-import NewLeadModal from '../modals/NewLeadModal';
+import NewDealModal from '../modals/NewDealModal';
 import { format } from 'date-fns';
 
 const SalesSuite = () => {
