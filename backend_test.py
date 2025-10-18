@@ -820,6 +820,9 @@ class BackendTester:
             ("CPQ Suite", self.test_cpq_suite),
             ("Documents Suite", self.test_documents_suite),
             ("Payments Suite", self.test_payments_suite),
+            ("Sales Suite (NEW)", self.test_sales_suite),
+            ("Finance Suite (NEW)", self.test_finance_suite),
+            ("Analytics Suite (NEW)", self.test_analytics_suite),
             ("AI Copilot", self.test_ai_copilot),
             ("Admin Endpoints", self.test_admin_endpoints)
         ]
