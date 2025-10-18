@@ -22,7 +22,7 @@ import {
   FileText,
   Bell,
   Activity,
-  CloudIcon
+  Cloud as CloudIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 
