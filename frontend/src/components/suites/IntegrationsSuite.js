@@ -16,7 +16,7 @@ import {
   XCircle, 
   Settings, 
   Plus, 
-  Sync, 
+  RefreshCw as Sync, 
   Database,
   Calendar,
   FileText,
