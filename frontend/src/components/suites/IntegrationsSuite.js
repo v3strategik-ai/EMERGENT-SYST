@@ -265,10 +265,34 @@ const IntegrationsSuite = () => {
   const totalSyncs = Object.values(integrations).filter(i => i.lastSync).length;
 
   const overallMetrics = [
-    { title: 'Connected Apps', value: `${connectedCount}/3`, change: '+1 this week', icon: CloudIcon, color: 'text-green-500' },
-    { title: 'Data Syncs Today', value: '47', change: '+12 new', icon: Sync, color: 'text-blue-500' },
-    { title: 'Active Automations', value: '23', change: '+5 running', icon: Zap, color: 'text-purple-500' },
-    { title: 'API Calls (24h)', value: '2.4K', change: '+15.2%', icon: Activity, color: 'text-orange-500' }
+    { 
+      title: 'Connected Apps', 
+      value: `${connectedCount}/3`, 
+      change: connectedCount > 0 ? 'Active' : 'Setup Required', 
+      icon: CloudIcon, 
+      color: connectedCount > 0 ? 'text-green-500' : 'text-orange-500' 
+    },
+    { 
+      title: 'Data Syncs Today', 
+      value: metrics?.overall?.total_api_calls ? metrics.overall.total_api_calls.toString() : '0', 
+      change: metrics?.overall?.success_rate || 'N/A', 
+      icon: Sync, 
+      color: 'text-blue-500' 
+    },
+    { 
+      title: 'Active Automations', 
+      value: `${totalSyncs}`, 
+      change: `${totalSyncs} running`, 
+      icon: Zap, 
+      color: 'text-purple-500' 
+    },
+    { 
+      title: 'Response Time', 
+      value: metrics?.overall?.average_response_time || 'N/A', 
+      change: 'Avg response', 
+      icon: Activity, 
+      color: 'text-orange-500' 
+    }
   ];
 
   return (
