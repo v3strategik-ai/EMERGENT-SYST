@@ -1011,7 +1011,12 @@ class BackendTester:
             self.log_result("Sync All Integrations", False, f"HTTP {response.status_code}: {response.text}")
         
         # Test team notification workflow
-        response = self.make_request("POST", "/integrations/workflows/team-notification?message=Integration test complete&channel=general")
+        notification_data = {
+            "message": "Integration test complete",
+            "channel": "general"
+        }
+        
+        response = self.make_request("POST", "/integrations/workflows/team-notification", notification_data)
         if response is None:
             self.log_result("Team Notification Workflow", False, "Connection timeout or error")
         elif response.status_code == 200:
