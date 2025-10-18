@@ -179,7 +179,9 @@ class BackendTester:
                 except:
                     self.log_result("Admin Login", False, "Invalid JSON response")
             else:
-                self.log_result("Admin Login", False, f"HTTP {response.status_code if response else 'No response'}")
+                self.log_result("Admin Login", False, f"HTTP {response.status_code if response else 'No response'}: {response.text if response else 'No response'}")
+        else:
+            self.log_result("Admin Registration", False, f"HTTP {response.status_code if response else 'No response'}: {response.text if response else 'No response'}")
         
         return self.auth_token is not None
     
