@@ -50,7 +50,7 @@ const SystemIXPlatform = () => {
               <img 
                 src="/agentik-logo.png" 
                 alt="Agentik Solutions" 
-                className="h-16 w-auto object-contain"
+                className="h-20 w-auto object-contain"
               />
               <div>
                 <h1 className="text-3xl font-bold text-primary bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
