@@ -12,6 +12,7 @@ import { analyticsAPI } from '../../utils/crmAPI';
 const AnalyticsSuite = () => {
   const [newDashboardOpen, setNewDashboardOpen] = useState(false);
   const [dashboardName, setDashboardName] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleCreateDashboard = () => {
     if (dashboardName.trim()) {
