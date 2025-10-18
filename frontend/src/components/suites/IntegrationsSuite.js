@@ -194,32 +194,57 @@ const IntegrationsSuite = () => {
     }
   };
 
-  const handleConnect = (platform) => {
-    setIntegrations(prev => ({
-      ...prev,
-      [platform]: {
-        ...prev[platform],
-        connected: !prev[platform].connected,
-        status: prev[platform].connected ? 'Disconnected' : 'Connected',
-        lastSync: prev[platform].connected ? null : 'Just now'
-      }
-    }));
-    toast.success(`${integrations[platform].name} ${integrations[platform].connected ? 'disconnected' : 'connected'} successfully!`);
+  const handleConnect = async (platform) => {
+    try {
+      // For now, just refresh status since connections require API keys
+      await fetchIntegrationStatuses();
+      toast.info(`${integrations[platform].name} connection status refreshed. Configure API keys in settings for full connectivity.`);
+    } catch (error) {
+      console.error(`Error refreshing ${platform} connection:`, error);
+      toast.error(`Failed to refresh ${platform} connection status`);
+    }
   };
 
-  const handleSync = (platform) => {
-    setSyncModalOpen(true);
-    setTimeout(() => {
-      setIntegrations(prev => ({
-        ...prev,
-        [platform]: {
-          ...prev[platform],
-          lastSync: 'Just now'
-        }
-      }));
+  const handleSync = async (platform) => {
+    try {
+      setSyncModalOpen(true);
+      
+      let endpoint = '';
+      switch (platform) {
+        case 'salesforce':
+          endpoint = '/integrations/salesforce/sync';
+          break;
+        case 'slack':
+          endpoint = '/integrations/slack/channels';
+          break;
+        case 'zoom':
+          endpoint = '/integrations/zoom/meetings';
+          break;
+        default:
+          endpoint = '/integrations/workflows/sync-all';
+      }
+      
+      const response = await api.post(endpoint);
+      
+      if (response.data.success) {
+        setIntegrations(prev => ({
+          ...prev,
+          [platform]: {
+            ...prev[platform],
+            lastSync: 'Just now'
+          }
+        }));
+        toast.success(`${integrations[platform].name} synced successfully!`);
+      } else {
+        toast.error(`Failed to sync ${integrations[platform].name}`);
+      }
+      
+    } catch (error) {
+      console.error(`Error syncing ${platform}:`, error);
+      toast.error(`Failed to sync ${integrations[platform].name}`);
+    } finally {
       setSyncModalOpen(false);
-      toast.success(`${integrations[platform].name} synced successfully!`);
-    }, 2000);
+    }
   };
 
   const handleFeatureToggle = (platform, feature) => {
