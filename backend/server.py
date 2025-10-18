@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta, date
+from routes import integrations
 import bcrypt
 import jwt
 from ai_copilot import AICopilot
