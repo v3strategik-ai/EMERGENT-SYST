@@ -302,12 +302,12 @@ async def send_team_notification(
 # Configuration Endpoints  
 @router.post("/configure")
 async def configure_integration(
-    integration_type: str,
     config_data: Dict[str, Any],
     current_user: User = Depends(get_current_user)
 ):
     """Configure integration settings"""
     try:
+        integration_type = config_data.get("integration_type", "unknown")
         # This would update integration configuration
         # For now, return success
         return {
