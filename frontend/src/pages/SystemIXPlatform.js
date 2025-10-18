@@ -32,7 +32,8 @@ const SystemIXPlatform = () => {
     { id: 'cpq', label: 'CPQ', badge: '1' },
     { id: 'finance', label: 'Finance', badge: '3' },
     { id: 'documents', label: 'Documents', badge: '10' },
-    { id: 'payments', label: 'Payments', badge: '11' }
+    { id: 'payments', label: 'Payments', badge: '11' },
+    { id: 'integrations', label: 'Integrations', badge: '3' }
   ];
 
   const handleToggleListening = () => {
