@@ -140,6 +140,10 @@ const SystemIXPlatform = () => {
                 <TabsContent value="payments" className="mt-0">
                   <PaymentsSuite />
                 </TabsContent>
+
+                <TabsContent value="integrations" className="mt-0">
+                  <IntegrationsSuite />
+                </TabsContent>
               </div>
             </Tabs>
           </div>
