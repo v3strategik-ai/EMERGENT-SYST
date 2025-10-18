@@ -739,6 +739,20 @@ class BackendTester:
         """Test Admin-only endpoints"""
         print("\n=== TESTING ADMIN ENDPOINTS ===")
         
+        # Try to get admin token if we don't have it
+        if not self.admin_token:
+            admin_login = {"email": TEST_ADMIN_DATA["email"], "password": TEST_ADMIN_DATA["password"]}
+            response = self.make_request("POST", "/auth/login", admin_login, auth_required=False)
+            if response and response.status_code == 200:
+                try:
+                    data = response.json()
+                    self.admin_token = data.get("access_token")
+                    self.log_result("Admin Login for Testing", True, "Admin login successful")
+                except:
+                    self.log_result("Admin Login for Testing", False, "Invalid JSON response")
+            else:
+                self.log_result("Admin Login for Testing", False, f"HTTP {response.status_code if response else 'No response'}")
+        
         if not self.admin_token:
             self.log_result("Admin Endpoints", False, "No admin token available")
             return False
