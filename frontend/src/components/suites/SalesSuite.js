@@ -216,7 +216,7 @@ const SalesSuite = () => {
         </CardContent>
       </Card>
 
-      <NewLeadModal open={newDealOpen} onOpenChange={setNewDealOpen} onSuccess={fetchDeals} />
+      <NewDealModal open={newDealOpen} onOpenChange={setNewDealOpen} onSuccess={fetchDeals} />
     </div>
   );
 };
