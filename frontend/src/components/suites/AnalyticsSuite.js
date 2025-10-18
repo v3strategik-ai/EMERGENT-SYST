@@ -150,9 +150,9 @@ const AnalyticsSuite = () => {
               <Button variant='outline' onClick={() => setNewDashboardOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleCreateDashboard}>
+              <Button onClick={handleCreateDashboard} disabled={loading}>
                 <Plus className='h-4 w-4 mr-2' />
-                Create Dashboard
+                {loading ? 'Creating...' : 'Create Dashboard'}
               </Button>
             </div>
           </div>
