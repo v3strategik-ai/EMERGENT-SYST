@@ -20,8 +20,7 @@ const SalesSuite = () => {
 
   const fetchDeals = async () => {
     try {
-      const response = await crmAPI.getLeads();
-      // Filter for closed won deals
+      const response = await salesAPI.getDeals();
       setDeals(response.data);
     } catch (error) {
       toast.error('Failed to load deals');
