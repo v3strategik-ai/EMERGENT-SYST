@@ -735,6 +735,340 @@ class BackendTester:
         
         return True
     
+    def test_integrations_suite(self):
+        """Test Integration Suite APIs (NEWLY IMPLEMENTED)"""
+        print("\n=== TESTING INTEGRATIONS SUITE (NEW) ===")
+        
+        if not self.auth_token:
+            self.log_result("Integrations Suite", False, "No authentication token available")
+            return False
+        
+        # Test overall integration status
+        response = self.make_request("GET", "/integrations/status")
+        if response is None:
+            self.log_result("Get Integration Status", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                integrations = data.get("integrations", {})
+                self.log_result("Get Integration Status", True, f"Retrieved status for {len(integrations)} integrations")
+            except:
+                self.log_result("Get Integration Status", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Integration Status", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test individual integration statuses
+        integration_types = ["salesforce", "slack", "zoom"]
+        for integration in integration_types:
+            response = self.make_request("GET", f"/integrations/{integration}/status")
+            if response is None:
+                self.log_result(f"Get {integration.title()} Status", False, "Connection timeout or error")
+            elif response.status_code == 200:
+                try:
+                    data = response.json()
+                    status = data.get("status", "Unknown")
+                    self.log_result(f"Get {integration.title()} Status", True, f"Status: {status}")
+                except:
+                    self.log_result(f"Get {integration.title()} Status", False, "Invalid JSON response")
+            else:
+                self.log_result(f"Get {integration.title()} Status", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test Salesforce CRM endpoints
+        self.test_salesforce_integration()
+        
+        # Test Slack communication endpoints
+        self.test_slack_integration()
+        
+        # Test Zoom meeting endpoints
+        self.test_zoom_integration()
+        
+        # Test workflow automation endpoints
+        self.test_workflow_automation()
+        
+        # Test configuration and metrics
+        self.test_integration_config_metrics()
+        
+        return True
+    
+    def test_salesforce_integration(self):
+        """Test Salesforce CRM Integration endpoints"""
+        print("\n--- Testing Salesforce CRM Integration ---")
+        
+        # Test get Salesforce leads
+        response = self.make_request("GET", "/integrations/salesforce/leads")
+        if response is None:
+            self.log_result("Get Salesforce Leads", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                leads = data.get("leads", [])
+                self.log_result("Get Salesforce Leads", True, f"Retrieved {len(leads)} Salesforce leads")
+            except:
+                self.log_result("Get Salesforce Leads", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Salesforce Leads", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test create Salesforce lead
+        lead_data = {
+            "name": "Integration Test Lead",
+            "company": "Test Company Inc",
+            "email": "test@testcompany.com",
+            "phone": "+1-555-TEST",
+            "status": "New"
+        }
+        
+        response = self.make_request("POST", "/integrations/salesforce/leads", lead_data)
+        if response is None:
+            self.log_result("Create Salesforce Lead", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("Create Salesforce Lead", success, f"Lead creation: {data.get('message', 'Unknown')}")
+            except:
+                self.log_result("Create Salesforce Lead", False, "Invalid JSON response")
+        else:
+            self.log_result("Create Salesforce Lead", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test get Salesforce opportunities
+        response = self.make_request("GET", "/integrations/salesforce/opportunities")
+        if response is None:
+            self.log_result("Get Salesforce Opportunities", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                opportunities = data.get("opportunities", [])
+                self.log_result("Get Salesforce Opportunities", True, f"Retrieved {len(opportunities)} opportunities")
+            except:
+                self.log_result("Get Salesforce Opportunities", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Salesforce Opportunities", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test Salesforce data sync
+        response = self.make_request("POST", "/integrations/salesforce/sync")
+        if response is None:
+            self.log_result("Salesforce Data Sync", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("Salesforce Data Sync", success, f"Sync status: {data.get('status', 'Unknown')}")
+            except:
+                self.log_result("Salesforce Data Sync", False, "Invalid JSON response")
+        else:
+            self.log_result("Salesforce Data Sync", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_slack_integration(self):
+        """Test Slack Communication Integration endpoints"""
+        print("\n--- Testing Slack Communication Integration ---")
+        
+        # Test get Slack channels
+        response = self.make_request("GET", "/integrations/slack/channels")
+        if response is None:
+            self.log_result("Get Slack Channels", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                channels = data.get("channels", [])
+                self.log_result("Get Slack Channels", True, f"Retrieved {len(channels)} Slack channels")
+            except:
+                self.log_result("Get Slack Channels", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Slack Channels", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test create Slack channel
+        channel_data = {
+            "name": "integration-test",
+            "is_private": False
+        }
+        
+        response = self.make_request("POST", "/integrations/slack/channels", channel_data)
+        if response is None:
+            self.log_result("Create Slack Channel", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("Create Slack Channel", success, f"Channel creation: {data.get('channel_name', 'Unknown')}")
+            except:
+                self.log_result("Create Slack Channel", False, "Invalid JSON response")
+        else:
+            self.log_result("Create Slack Channel", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test send Slack notification
+        notification_data = {
+            "channel": "general",
+            "message": "Integration test notification from Agentik Solutions API"
+        }
+        
+        response = self.make_request("POST", "/integrations/slack/notify", notification_data)
+        if response is None:
+            self.log_result("Send Slack Notification", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("Send Slack Notification", success, f"Notification sent to {data.get('channel', 'Unknown')}")
+            except:
+                self.log_result("Send Slack Notification", False, "Invalid JSON response")
+        else:
+            self.log_result("Send Slack Notification", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_zoom_integration(self):
+        """Test Zoom Meeting Integration endpoints"""
+        print("\n--- Testing Zoom Meeting Integration ---")
+        
+        # Test get Zoom meetings
+        response = self.make_request("GET", "/integrations/zoom/meetings")
+        if response is None:
+            self.log_result("Get Zoom Meetings", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                meetings = data.get("meetings", [])
+                self.log_result("Get Zoom Meetings", True, f"Retrieved {len(meetings)} Zoom meetings")
+            except:
+                self.log_result("Get Zoom Meetings", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Zoom Meetings", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test create Zoom meeting
+        meeting_data = {
+            "topic": "Integration Test Meeting",
+            "start_time": "2024-01-25T15:00:00Z",
+            "duration": 30,
+            "timezone": "UTC"
+        }
+        
+        response = self.make_request("POST", "/integrations/zoom/meetings", meeting_data)
+        meeting_id = None
+        if response is None:
+            self.log_result("Create Zoom Meeting", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                meeting_id = data.get("meeting_id")
+                self.log_result("Create Zoom Meeting", success, f"Meeting created: {data.get('topic', 'Unknown')}")
+            except:
+                self.log_result("Create Zoom Meeting", False, "Invalid JSON response")
+        else:
+            self.log_result("Create Zoom Meeting", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test get meeting analytics (if meeting was created)
+        if meeting_id:
+            response = self.make_request("GET", f"/integrations/zoom/meetings/{meeting_id}/analytics")
+            if response is None:
+                self.log_result("Get Meeting Analytics", False, "Connection timeout or error")
+            elif response.status_code == 200:
+                try:
+                    data = response.json()
+                    analytics = data.get("analytics", {})
+                    participants = analytics.get("total_participants", 0)
+                    self.log_result("Get Meeting Analytics", True, f"Analytics retrieved: {participants} participants")
+                except:
+                    self.log_result("Get Meeting Analytics", False, "Invalid JSON response")
+            else:
+                self.log_result("Get Meeting Analytics", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_workflow_automation(self):
+        """Test Workflow Automation endpoints"""
+        print("\n--- Testing Workflow Automation ---")
+        
+        # Test CRM to meeting workflow
+        crm_meeting_data = {
+            "lead_id": "test-lead-123",
+            "company": "Test Company Inc",
+            "meeting_time": "2024-01-25T16:00:00Z",
+            "attendees": ["test@example.com", "sales@agentik.com"]
+        }
+        
+        response = self.make_request("POST", "/integrations/workflows/crm-to-meeting", crm_meeting_data)
+        if response is None:
+            self.log_result("CRM to Meeting Workflow", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("CRM to Meeting Workflow", success, f"Meeting scheduled from CRM lead")
+            except:
+                self.log_result("CRM to Meeting Workflow", False, "Invalid JSON response")
+        else:
+            self.log_result("CRM to Meeting Workflow", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test sync all integrations
+        response = self.make_request("POST", "/integrations/workflows/sync-all")
+        if response is None:
+            self.log_result("Sync All Integrations", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("Sync All Integrations", success, f"Full sync initiated: {data.get('status', 'Unknown')}")
+            except:
+                self.log_result("Sync All Integrations", False, "Invalid JSON response")
+        else:
+            self.log_result("Sync All Integrations", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test team notification workflow
+        response = self.make_request("POST", "/integrations/workflows/team-notification?message=Integration test complete&channel=general")
+        if response is None:
+            self.log_result("Team Notification Workflow", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                self.log_result("Team Notification Workflow", success, f"Team notification sent")
+            except:
+                self.log_result("Team Notification Workflow", False, "Invalid JSON response")
+        else:
+            self.log_result("Team Notification Workflow", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_integration_config_metrics(self):
+        """Test Integration Configuration and Metrics endpoints"""
+        print("\n--- Testing Integration Configuration & Metrics ---")
+        
+        # Test integration configuration
+        config_data = {
+            "integration_type": "salesforce",
+            "settings": {
+                "sync_frequency": "hourly",
+                "auto_sync": True,
+                "notification_channel": "crm-alerts"
+            }
+        }
+        
+        response = self.make_request("POST", "/integrations/configure", config_data)
+        if response is None:
+            self.log_result("Configure Integration", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                integration = data.get("integration", "Unknown")
+                self.log_result("Configure Integration", success, f"Configuration updated for {integration}")
+            except:
+                self.log_result("Configure Integration", False, "Invalid JSON response")
+        else:
+            self.log_result("Configure Integration", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test get integration metrics
+        response = self.make_request("GET", "/integrations/metrics")
+        if response is None:
+            self.log_result("Get Integration Metrics", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                metrics = data.get("metrics", {})
+                overall = data.get("overall", {})
+                success_rate = overall.get("success_rate", "Unknown")
+                self.log_result("Get Integration Metrics", success, f"Metrics retrieved: {success_rate} success rate")
+            except:
+                self.log_result("Get Integration Metrics", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Integration Metrics", False, f"HTTP {response.status_code}: {response.text}")
+
     def test_admin_endpoints(self):
         """Test Admin-only endpoints"""
         print("\n=== TESTING ADMIN ENDPOINTS ===")
