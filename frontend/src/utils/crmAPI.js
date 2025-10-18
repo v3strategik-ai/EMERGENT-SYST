@@ -32,3 +32,23 @@ export const paymentAPI = {
   createTransaction: (data) => api.post('/payments/transactions', data),
   getTransactions: () => api.get('/payments/transactions'),
 };
+
+export const salesAPI = {
+  createDeal: (data) => api.post('/sales/deals', data),
+  getDeals: () => api.get('/sales/deals'),
+  updateDeal: (id, data) => api.put(`/sales/deals/${id}`, data),
+  deleteDeal: (id) => api.delete(`/sales/deals/${id}`),
+};
+
+export const financeAPI = {
+  createReport: (data) => api.post('/finance/reports', data),
+  getReports: () => api.get('/finance/reports'),
+  updateReport: (id, data) => api.put(`/finance/reports/${id}`, data),
+  deleteReport: (id) => api.delete(`/finance/reports/${id}`),
+};
+
+export const analyticsAPI = {
+  createDashboard: (data) => api.post('/analytics/dashboards', data),
+  getDashboards: () => api.get('/analytics/dashboards'),
+  getAnalyticsData: (type) => api.get(`/analytics/data/${type}`),
+};
