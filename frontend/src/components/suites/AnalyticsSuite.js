@@ -14,11 +14,24 @@ const AnalyticsSuite = () => {
   const [dashboardName, setDashboardName] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleCreateDashboard = () => {
+  const handleCreateDashboard = async () => {
     if (dashboardName.trim()) {
-      toast.success(`Dashboard "${dashboardName}" created successfully!`);
-      setNewDashboardOpen(false);
-      setDashboardName('');
+      setLoading(true);
+      try {
+        await analyticsAPI.createDashboard({
+          name: dashboardName,
+          dashboard_type: 'Custom',
+          widgets: [],
+          config: {}
+        });
+        toast.success(`Dashboard "${dashboardName}" created successfully!`);
+        setNewDashboardOpen(false);
+        setDashboardName('');
+      } catch (error) {
+        toast.error('Failed to create dashboard');
+      } finally {
+        setLoading(false);
+      }
     }
   };
   const metrics = [
