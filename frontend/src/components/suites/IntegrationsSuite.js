@@ -31,6 +31,8 @@ const IntegrationsSuite = () => {
   const [selectedIntegration, setSelectedIntegration] = useState(null);
   const [configModalOpen, setConfigModalOpen] = useState(false);
   const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState(null);
   
   // Connection states for each platform
   const [integrations, setIntegrations] = useState({
@@ -57,41 +59,140 @@ const IntegrationsSuite = () => {
       name: 'Slack Workspace',
       icon: MessageSquare,
       color: 'bg-purple-600',
-      connected: true,
-      status: 'Connected',
-      lastSync: '2 minutes ago',
+      connected: false,
+      status: 'Disconnected',
+      lastSync: null,
       features: {
-        notifications: true,
-        automatedUpdates: true,
+        notifications: false,
+        automatedUpdates: false,
         botIntegration: false,
-        channelManagement: true
+        channelManagement: false
       },
       metrics: {
-        activeChannels: 12,
-        dailyMessages: 847,
-        automations: 5
+        activeChannels: 0,
+        dailyMessages: 0,
+        automations: 0
       }
     },
     zoom: {
       name: 'Zoom Meetings',
       icon: Video,
       color: 'bg-blue-500',
-      connected: true,
-      status: 'Connected',
-      lastSync: '5 minutes ago',
+      connected: false,
+      status: 'Disconnected',
+      lastSync: null,
       features: {
-        meetingScheduling: true,
-        calendarSync: true,
+        meetingScheduling: false,
+        calendarSync: false,
         recordingManagement: false,
-        participantTracking: true
+        participantTracking: false
       },
       metrics: {
-        scheduledMeetings: 23,
-        totalParticipants: 156,
-        recordings: 8
+        scheduledMeetings: 0,
+        totalParticipants: 0,
+        recordings: 0
       }
     }
   });
+
+  // Fetch integration statuses on component mount
+  useEffect(() => {
+    fetchIntegrationStatuses();
+    fetchIntegrationMetrics();
+  }, []);
+
+  const fetchIntegrationStatuses = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/integrations/status');
+      const statuses = response.data.integrations;
+      
+      setIntegrations(prev => ({
+        salesforce: {
+          ...prev.salesforce,
+          connected: statuses.salesforce?.connected || false,
+          status: statuses.salesforce?.status || 'Disconnected',
+          lastSync: statuses.salesforce?.last_sync || null,
+          features: statuses.salesforce?.connected ? {
+            leadSync: true,
+            contactSync: true,
+            dealTracking: true,
+            opportunityPipeline: true
+          } : prev.salesforce.features
+        },
+        slack: {
+          ...prev.slack,
+          connected: statuses.slack?.connected || false,
+          status: statuses.slack?.status || 'Disconnected',
+          lastSync: statuses.slack?.last_sync || null,
+          features: statuses.slack?.connected ? {
+            notifications: true,
+            automatedUpdates: true,
+            botIntegration: true,
+            channelManagement: true
+          } : prev.slack.features
+        },
+        zoom: {
+          ...prev.zoom,
+          connected: statuses.zoom?.connected || false,
+          status: statuses.zoom?.status || 'Disconnected',
+          lastSync: statuses.zoom?.last_sync || null,
+          features: statuses.zoom?.connected ? {
+            meetingScheduling: true,
+            calendarSync: true,
+            recordingManagement: true,
+            participantTracking: true
+          } : prev.zoom.features
+        }
+      }));
+      
+    } catch (error) {
+      console.error('Error fetching integration statuses:', error);
+      toast.error('Failed to load integration statuses');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchIntegrationMetrics = async () => {
+    try {
+      const response = await api.get('/integrations/metrics');
+      setMetrics(response.data.metrics);
+      
+      // Update integration metrics
+      if (response.data.metrics) {
+        setIntegrations(prev => ({
+          salesforce: {
+            ...prev.salesforce,
+            metrics: {
+              syncedLeads: response.data.metrics.salesforce?.leads_synced || 0,
+              syncedContacts: response.data.metrics.salesforce?.opportunities_synced || 0,
+              activeDeals: response.data.metrics.salesforce?.api_calls_today || 0
+            }
+          },
+          slack: {
+            ...prev.slack,
+            metrics: {
+              activeChannels: response.data.metrics.slack?.channels_active || 0,
+              dailyMessages: response.data.metrics.slack?.messages_sent || 0,
+              automations: response.data.metrics.slack?.notifications_today || 0
+            }
+          },
+          zoom: {
+            ...prev.zoom,
+            metrics: {
+              scheduledMeetings: response.data.metrics.zoom?.meetings_created || 0,
+              totalParticipants: response.data.metrics.zoom?.total_participants || 0,
+              recordings: response.data.metrics.zoom?.recordings_processed || 0
+            }
+          }
+        }));
+      }
+      
+    } catch (error) {
+      console.error('Error fetching integration metrics:', error);
+    }
+  };
 
   const handleConnect = (platform) => {
     setIntegrations(prev => ({
