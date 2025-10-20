@@ -69,76 +69,76 @@ const Landing = () => {
 
       {/* Features Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Powerful Features</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Complete Business Intelligence Suite</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="border-2 hover:border-blue-500 transition-all">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
             <CardContent className="pt-6">
               <div className="rounded-full bg-blue-100 w-12 h-12 flex items-center justify-center mb-4">
                 <CheckCircle className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Submit Status Checks</h3>
-              <p className="text-gray-600">
-                Employees can quickly submit status checks with priority levels, categories, and detailed descriptions.
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">CRM & Sales Management</h3>
+              <p className="text-gray-700 font-medium">
+                Complete customer relationship management with lead tracking, opportunity pipeline, and sales analytics.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
             <CardContent className="pt-6">
               <div className="rounded-full bg-purple-100 w-12 h-12 flex items-center justify-center mb-4">
                 <BarChart3 className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Advanced Analytics</h3>
-              <p className="text-gray-600">
-                Admins get comprehensive analytics dashboards with real-time insights and visual data representations.
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Advanced Analytics</h3>
+              <p className="text-gray-700 font-medium">
+                Comprehensive dashboards with real-time insights, custom reports, and predictive analytics.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
             <CardContent className="pt-6">
               <div className="rounded-full bg-green-100 w-12 h-12 flex items-center justify-center mb-4">
                 <Shield className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Role-Based Access</h3>
-              <p className="text-gray-600">
-                Secure authentication with role-based permissions ensuring data privacy and proper access control.
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Platform Integrations</h3>
+              <p className="text-gray-700 font-medium">
+                Seamless connectivity with Salesforce, Slack, Zoom, and other business-critical platforms.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
             <CardContent className="pt-6">
               <div className="rounded-full bg-orange-100 w-12 h-12 flex items-center justify-center mb-4">
                 <Users className="h-6 w-6 text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">User Management</h3>
-              <p className="text-gray-600">
-                Admins can view and manage all users, track activity, and monitor team performance.
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Workflow Automation</h3>
+              <p className="text-gray-700 font-medium">
+                Automate business processes, create custom workflows, and streamline operations.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
             <CardContent className="pt-6">
               <div className="rounded-full bg-red-100 w-12 h-12 flex items-center justify-center mb-4">
                 <Zap className="h-6 w-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Real-Time Updates</h3>
-              <p className="text-gray-600">
-                Instant visibility into status changes with live updates and notifications.
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">AI-Powered Insights</h3>
+              <p className="text-gray-700 font-medium">
+                Leverage artificial intelligence for business insights, predictive analytics, and smart automation.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
             <CardContent className="pt-6">
               <div className="rounded-full bg-indigo-100 w-12 h-12 flex items-center justify-center mb-4">
                 <Activity className="h-6 w-6 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Activity Tracking</h3>
-              <p className="text-gray-600">
-                Complete audit trail of all status checks with timestamps and user attribution.
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Document & Finance Management</h3>
+              <p className="text-gray-700 font-medium">
+                Complete document management, financial reporting, and payment processing capabilities.
               </p>
             </CardContent>
           </Card>
