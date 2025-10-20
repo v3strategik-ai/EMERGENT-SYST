@@ -25,6 +25,11 @@ const SystemIXPlatform = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isListening, setIsListening] = useState(false);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   const tabs = [
     { id: 'dashboard', label: 'AI Dashboard', badge: null },
     { id: 'crm', label: 'CRM Suite', badge: '4' },
