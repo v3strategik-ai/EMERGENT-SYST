@@ -148,9 +148,9 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="bg-blue-600 text-white py-16 mt-20">
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Join teams already using StatusHub to monitor their systems and improve operations.
+          <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Business?</h2>
+          <p className="text-xl mb-8 text-blue-100 font-medium">
+            Join enterprise teams already using Agentik Solutions to drive data-driven decisions and optimize operations.
           </p>
           <Link to="/register">
             <Button size="lg" variant="secondary" className="text-lg px-8" data-testid="cta-register-button">
