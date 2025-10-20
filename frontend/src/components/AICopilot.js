@@ -240,108 +240,246 @@ const AICopilot = ({ isListening, onToggleListening }) => {
     }
   };
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${BACKEND_URL}/api/ai/query`,
-        { query: command },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      toast.success('AI Task Completed', {
-        description: response.data.response.substring(0, 100) + '...'
-      });
-    } catch (error) {
-      toast.error('AI processing failed');
-    } finally {
-      setIsProcessing(false);
-      setStatus('Ready');
-      onToggleListening();
-    }
-  };
-
-  const capabilities = [
-    { name: 'Data Analysis', icon: TrendingUp },
-    { name: 'Report Generation', icon: MessageCircle },
-    { name: 'Automation', icon: Bot },
-    { name: 'Learning', icon: Upload }
-  ];
-
   return (
     <div className="fixed bottom-6 right-6 z-50" data-testid="ai-copilot">
-      {isOpen && (
-        <Card className="mb-4 w-96 bg-card border-border shadow-2xl animate-in slide-in-from-bottom">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Bot className="h-5 w-5 text-blue-500" />
-              <span>Platinum AI Copilot</span>
+      {/* Advanced AI Copilot Dialog */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Brain className="h-6 w-6 text-purple-500" />
+              <span>Advanced AI Copilot</span>
               <Badge variant={status === 'Ready' ? 'default' : 'secondary'}>{status}</Badge>
-            </CardTitle>
-            <CardDescription>AI-powered business intelligence assistant</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Status:</span>
-                <Badge variant="outline">Active</Badge>
-              </div>
-              <div className="flex space-x-2">
-                <Button size="sm" variant="outline" className="flex-1">
-                  <Upload className="h-4 w-4 mr-1" />
-                  Upload KB
-                </Button>
-                <Button size="sm" variant="outline">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+              <Sparkles className="h-4 w-4 text-yellow-500 animate-pulse" />
+            </DialogTitle>
+          </DialogHeader>
 
-            {lastCommand && (
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="text-sm font-medium">Last Command:</p>
-                <p className="text-sm text-muted-foreground">"{lastCommand}"</p>
-              </div>
-            )}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-4 w-full">
+              <TabsTrigger value="chat" className="flex items-center space-x-2">
+                <MessageCircle className="h-4 w-4" />
+                <span>AI Chat</span>
+              </TabsTrigger>
+              <TabsTrigger value="insights" className="flex items-center space-x-2">
+                <BarChart3 className="h-4 w-4" />
+                <span>Insights</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center space-x-2">
+                <FileText className="h-4 w-4" />
+                <span>Reports</span>
+              </TabsTrigger>
+              <TabsTrigger value="predictions" className="flex items-center space-x-2">
+                <Target className="h-4 w-4" />
+                <span>Predictions</span>
+              </TabsTrigger>
+            </TabsList>
 
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">AI Capabilities:</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {capabilities.map((cap, idx) => (
-                  <div key={idx} className="p-2 border border-border rounded-lg text-center hover:bg-accent cursor-pointer">
-                    <cap.icon className="h-4 w-4 mx-auto mb-1 text-blue-500" />
-                    <p className="text-xs font-medium">{cap.name}</p>
+            {/* AI Chat Tab */}
+            <TabsContent value="chat" className="mt-4">
+              <div className="h-96 border rounded-lg flex flex-col">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-lg p-3 ${
+                          message.type === 'user'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-2">
+                          {message.type === 'ai' && <Bot className="h-4 w-4 mt-0.5 text-purple-500" />}
+                          <div className="flex-1">
+                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                            <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {isProcessing && (
+                    <div className="flex justify-start">
+                      <div className="bg-gray-100 rounded-lg p-3">
+                        <div className="flex items-center space-x-2">
+                          <Bot className="h-4 w-4 text-purple-500" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-sm">AI is thinking...</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+                
+                <div className="border-t p-4">
+                  <div className="flex space-x-2">
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Ask me anything about your business data..."
+                      onKeyPress={(e) => e.key === 'Enter' && !isProcessing && handleTextMessage(inputMessage)}
+                      disabled={isProcessing}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => handleTextMessage(inputMessage)}
+                      disabled={isProcessing || !inputMessage.trim()}
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
                   </div>
-                ))}
+                  
+                  <div className="flex space-x-2 mt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={onToggleListening}
+                      disabled={!isVoiceSupported || isProcessing}
+                      className={isListening ? 'bg-red-50 text-red-600' : ''}
+                    >
+                      {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                      {isListening ? 'Stop Voice' : 'Voice Input'}
+                    </Button>
+                    {!isVoiceSupported && (
+                      <Badge variant="outline" className="text-xs">Voice not supported</Badge>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
+            </TabsContent>
 
-            <div className="flex space-x-2">
-              <Button size="sm" variant="outline" className="flex-1">
-                <MessageCircle className="h-4 w-4 mr-1" />
-                Chat Mode
-              </Button>
-              <Button size="sm" variant="outline" className="flex-1">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                Analyze
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            {/* AI Insights Tab */}
+            <TabsContent value="insights" className="mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-96 overflow-y-auto">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <TrendingUp className="h-5 w-5 text-green-500" />
+                      <span>Sales Forecast</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">AI-powered sales prediction for next 30 days</p>
+                    <Button 
+                      size="sm" 
+                      onClick={() => generateQuickInsight('sales_forecast')}
+                      disabled={isProcessing}
+                      className="w-full"
+                    >
+                      <Zap className="h-4 w-4 mr-2" />
+                      Generate Forecast
+                    </Button>
+                  </CardContent>
+                </Card>
 
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <Lightbulb className="h-5 w-5 text-yellow-500" />
+                      <span>Smart Recommendations</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">AI-generated business recommendations</p>
+                    <Button 
+                      size="sm" 
+                      onClick={() => generateQuickInsight('recommendations')}
+                      disabled={isProcessing}
+                      className="w-full"
+                    >
+                      <Brain className="h-4 w-4 mr-2" />
+                      Get Recommendations
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <FileText className="h-5 w-5 text-blue-500" />
+                      <span>Executive Report</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">Automated executive summary generation</p>
+                    <Button 
+                      size="sm" 
+                      onClick={() => generateQuickInsight('executive_report')}
+                      disabled={isProcessing}
+                      className="w-full"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate Report
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <Target className="h-5 w-5 text-purple-500" />
+                      <span>Anomaly Detection</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">AI-powered business anomaly detection</p>
+                    <Badge variant="outline" className="w-full justify-center">Coming Soon</Badge>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Reports Tab */}
+            <TabsContent value="reports" className="mt-4">
+              <div className="space-y-4 h-96 overflow-y-auto">
+                <div className="text-center py-8">
+                  <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">AI Report Generation</h3>
+                  <p className="text-muted-foreground mb-4">Generate comprehensive business reports using AI</p>
+                  <div className="space-y-2">
+                    <Button onClick={() => generateQuickInsight('executive_report')} disabled={isProcessing}>
+                      Generate Executive Summary
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Predictions Tab */}
+            <TabsContent value="predictions" className="mt-4">
+              <div className="space-y-4 h-96 overflow-y-auto">
+                <div className="text-center py-8">
+                  <Target className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">AI Predictions</h3>
+                  <p className="text-muted-foreground mb-4">Advanced predictive analytics for your business</p>
+                  <div className="space-y-2">
+                    <Button onClick={() => generateQuickInsight('sales_forecast')} disabled={isProcessing}>
+                      Sales Forecast
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      {/* Floating Action Button */}
       <div className="flex items-center space-x-2">
-        {isOpen && (
-          <Button onClick={() => setIsOpen(false)} variant="outline" size="sm" className="bg-background">
-            Close
-          </Button>
-        )}
-        <Button onClick={() => setIsOpen(!isOpen)} variant="outline" size="sm" className="bg-background">
-          <Bot className="h-4 w-4" />
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="h-16 w-16 rounded-full shadow-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+        >
+          <Brain className="h-8 w-8" />
         </Button>
+        
         <Button
           onClick={onToggleListening}
-          disabled={isProcessing}
-          className={`h-16 w-16 rounded-full shadow-lg transition-all duration-300 ${
+          disabled={isProcessing || !isVoiceSupported}
+          className={`h-14 w-14 rounded-full shadow-lg transition-all duration-300 ${
             isListening
               ? 'bg-red-600 hover:bg-red-700 animate-pulse scale-110'
               : 'bg-blue-600 hover:bg-blue-700'
@@ -349,15 +487,16 @@ const AICopilot = ({ isListening, onToggleListening }) => {
           data-testid="voice-control-button"
         >
           {isProcessing ? (
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <Loader2 className="h-6 w-6 animate-spin" />
           ) : isListening ? (
-            <MicOff className="h-8 w-8" />
+            <MicOff className="h-6 w-6" />
           ) : (
-            <Mic className="h-8 w-8" />
+            <Mic className="h-6 w-6" />
           )}
         </Button>
       </div>
 
+      {/* Status Indicator */}
       {isListening && (
         <div className="absolute -top-12 right-0 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium animate-pulse">
           {status}
