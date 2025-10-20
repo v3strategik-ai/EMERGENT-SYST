@@ -1,10 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Badge } from './ui/badge';
-import { Mic, MicOff, Bot, Upload, Settings, MessageCircle, TrendingUp, Loader2 } from 'lucide-react';
+import { Input } from './ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { 
+  Mic, 
+  MicOff, 
+  Bot, 
+  Settings, 
+  MessageCircle, 
+  TrendingUp, 
+  Loader2, 
+  Send,
+  Brain,
+  Sparkles,
+  BarChart3,
+  FileText,
+  Lightbulb,
+  Zap,
+  Target
+} from 'lucide-react';
 import { toast } from 'sonner';
-import axios from 'axios';
+import api from '../utils/api';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
