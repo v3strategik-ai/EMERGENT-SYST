@@ -45,12 +45,12 @@ const Landing = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Monitor Status Checks
-            <span className="text-blue-600"> In Real-Time</span>
+            Business Intelligence
+            <span className="text-blue-600"> Platform</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            A powerful SaaS platform for teams to submit, track, and analyze status checks.
-            Built for employees and admins who demand visibility and control.
+          <p className="text-xl text-gray-800 mb-8 max-w-3xl mx-auto font-medium">
+            A comprehensive business intelligence suite with CRM, Analytics, Automation, and seamless integrations for Salesforce, Slack, and Zoom.
+            Built for modern enterprises that demand data-driven insights.
           </p>
           <div className="flex justify-center space-x-4">
             <Link to="/register">
