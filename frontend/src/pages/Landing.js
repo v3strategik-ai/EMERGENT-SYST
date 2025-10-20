@@ -173,7 +173,11 @@ const Landing = () => {
             Join enterprise teams already using Agentik Solutions to drive data-driven decisions and optimize operations.
           </p>
           <Link to="/register">
-            <Button size="lg" variant="secondary" className="text-lg px-8" data-testid="cta-register-button">
+            <Button 
+              size="lg" 
+              className="text-lg px-8 bg-white text-blue-600 hover:bg-gray-100 font-bold shadow-xl border-2 border-white" 
+              data-testid="cta-register-button"
+            >
               Create Your Account
             </Button>
           </Link>
