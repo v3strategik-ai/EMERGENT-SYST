@@ -790,6 +790,399 @@ class BackendTester:
         
         return True
     
+    def test_advanced_ai_suite(self):
+        """Test Advanced AI Suite APIs (NEWLY IMPLEMENTED)"""
+        print("\n=== TESTING ADVANCED AI SUITE (NEW) ===")
+        
+        if not self.auth_token:
+            self.log_result("Advanced AI Suite", False, "No authentication token available")
+            return False
+        
+        # Test 1: Predictive Analytics - Sales Forecast
+        self.test_sales_forecasting()
+        
+        # Test 2: Predictive Analytics - Customer Churn
+        self.test_customer_churn_prediction()
+        
+        # Test 3: Enhanced AI Copilot - Natural Language Query
+        self.test_natural_language_copilot()
+        
+        # Test 4: Enhanced AI Copilot - Voice Commands
+        self.test_voice_command_processing()
+        
+        # Test 5: Automated Report Generation - Executive Summary
+        self.test_executive_report_generation()
+        
+        # Test 6: Automated Report Generation - Weekly Summary
+        self.test_weekly_report_generation()
+        
+        # Test 7: Anomaly Detection
+        self.test_anomaly_detection()
+        
+        # Test 8: AI Insights Dashboard
+        self.test_ai_insights_dashboard()
+        
+        # Test 9: Intelligent Recommendations
+        self.test_intelligent_recommendations()
+        
+        # Test 10: AI Configuration & Management
+        self.test_ai_configuration()
+        
+        # Test 11: Custom AI Model Training (Admin only)
+        self.test_custom_model_training()
+        
+        return True
+    
+    def test_sales_forecasting(self):
+        """Test AI-powered sales forecasting"""
+        print("\n--- Testing Sales Forecasting ---")
+        
+        forecast_data = {
+            "sales_data": [
+                {"name": "Enterprise Deal A", "value": 50000, "status": "Qualified", "probability": 80, "close_date": "2025-02-15"},
+                {"name": "SMB Deal B", "value": 15000, "status": "Prospecting", "probability": 40, "close_date": "2025-03-01"},
+                {"name": "Corporate Deal C", "value": 75000, "status": "Negotiation", "probability": 90, "close_date": "2025-01-30"},
+                {"name": "Startup Deal D", "value": 8000, "status": "Qualified", "probability": 60, "close_date": "2025-02-28"}
+            ],
+            "forecast_period_days": 90
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/predict/sales-forecast", forecast_data)
+        if response is None:
+            self.log_result("Sales Forecasting", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                forecast = data.get("forecast", {})
+                self.log_result("Sales Forecasting", success, f"GPT-5 sales forecast generated for {len(forecast_data['sales_data'])} deals")
+            except:
+                self.log_result("Sales Forecasting", False, "Invalid JSON response")
+        else:
+            self.log_result("Sales Forecasting", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_customer_churn_prediction(self):
+        """Test AI-powered customer churn prediction"""
+        print("\n--- Testing Customer Churn Prediction ---")
+        
+        churn_data = {
+            "customer_data": [
+                {"id": "cust_001", "name": "TechCorp Inc", "total_value": 25000, "last_activity_date": "2025-01-10T10:00:00Z", "engagement_score": 85},
+                {"id": "cust_002", "name": "StartupXYZ", "total_value": 5000, "last_activity_date": "2024-12-15T14:30:00Z", "engagement_score": 45},
+                {"id": "cust_003", "name": "Enterprise Ltd", "total_value": 100000, "last_activity_date": "2025-01-18T09:15:00Z", "engagement_score": 95},
+                {"id": "cust_004", "name": "SMB Solutions", "total_value": 12000, "last_activity_date": "2024-11-20T16:45:00Z", "engagement_score": 30}
+            ]
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/predict/customer-churn", churn_data)
+        if response is None:
+            self.log_result("Customer Churn Prediction", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                analysis = data.get("churn_analysis", {})
+                self.log_result("Customer Churn Prediction", success, f"GPT-5 churn analysis completed for {len(churn_data['customer_data'])} customers")
+            except:
+                self.log_result("Customer Churn Prediction", False, "Invalid JSON response")
+        else:
+            self.log_result("Customer Churn Prediction", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_natural_language_copilot(self):
+        """Test natural language business queries with Gemini 2.5 Pro"""
+        print("\n--- Testing Natural Language Copilot ---")
+        
+        query_data = {
+            "query": "What are our top performing sales deals this quarter and what insights can you provide about our revenue trends?",
+            "context_data": {
+                "current_quarter": "Q1 2025",
+                "total_deals": 45,
+                "total_revenue": 750000,
+                "top_deal_value": 100000
+            }
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/copilot/query", query_data)
+        if response is None:
+            self.log_result("Natural Language Copilot", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                ai_response = data.get("ai_response", "")
+                intent = data.get("intent", "")
+                self.log_result("Natural Language Copilot", success, f"Gemini 2.5 Pro processed query with intent: {intent}")
+            except:
+                self.log_result("Natural Language Copilot", False, "Invalid JSON response")
+        else:
+            self.log_result("Natural Language Copilot", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_voice_command_processing(self):
+        """Test voice command processing with intelligent interpretation"""
+        print("\n--- Testing Voice Command Processing ---")
+        
+        voice_data = {
+            "command_text": "Show me the sales dashboard and create a new lead for Acme Corporation with high priority",
+            "user_context": {
+                "current_page": "dashboard",
+                "user_permissions": ["view_sales", "create_leads"],
+                "recent_activity": "viewing_crm_suite"
+            }
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/copilot/voice-command", voice_data)
+        if response is None:
+            self.log_result("Voice Command Processing", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                interpretation = data.get("interpretation", "")
+                intent = data.get("intent", "")
+                confidence = data.get("confidence", "")
+                self.log_result("Voice Command Processing", success, f"Voice command interpreted with {confidence} confidence, intent: {intent}")
+            except:
+                self.log_result("Voice Command Processing", False, "Invalid JSON response")
+        else:
+            self.log_result("Voice Command Processing", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_executive_report_generation(self):
+        """Test AI-powered executive report generation with Claude-4 Sonnet"""
+        print("\n--- Testing Executive Report Generation ---")
+        
+        report_data = {
+            "report_type": "executive",
+            "data": {
+                "crm": {"total_leads": 150, "qualified_leads": 45, "conversion_rate": 30},
+                "sales": {"total_deals": 25, "closed_won": 8, "total_value": 500000},
+                "finance": {"revenue": 450000, "expenses": 320000, "profit_margin": 28.9},
+                "analytics": {"active_users": 85, "platform_usage": 92, "satisfaction_score": 4.2},
+                "integrations": {"salesforce_sync": "active", "slack_notifications": "active", "zoom_meetings": 15}
+            }
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/reports/executive-summary", report_data)
+        if response is None:
+            self.log_result("Executive Report Generation", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                report = data.get("report", {})
+                report_id = data.get("report_id", "")
+                self.log_result("Executive Report Generation", success, f"Claude-4 Sonnet generated executive report: {report_id}")
+            except:
+                self.log_result("Executive Report Generation", False, "Invalid JSON response")
+        else:
+            self.log_result("Executive Report Generation", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_weekly_report_generation(self):
+        """Test automated weekly business report generation"""
+        print("\n--- Testing Weekly Report Generation ---")
+        
+        weekly_data = {
+            "report_type": "weekly",
+            "data": {
+                "week_ending": "2025-01-19",
+                "sales_performance": {"deals_closed": 5, "revenue": 125000, "target_achievement": 104},
+                "customer_metrics": {"new_customers": 8, "support_tickets": 12, "satisfaction": 4.3},
+                "team_performance": {"active_users": 42, "tasks_completed": 156, "efficiency": 87},
+                "financial_summary": {"weekly_revenue": 125000, "expenses": 85000, "profit": 40000}
+            }
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/reports/weekly-summary", weekly_data)
+        if response is None:
+            self.log_result("Weekly Report Generation", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                report = data.get("report", {})
+                report_id = data.get("report_id", "")
+                self.log_result("Weekly Report Generation", success, f"Claude-4 Sonnet generated weekly report: {report_id}")
+            except:
+                self.log_result("Weekly Report Generation", False, "Invalid JSON response")
+        else:
+            self.log_result("Weekly Report Generation", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_anomaly_detection(self):
+        """Test AI-powered anomaly detection"""
+        print("\n--- Testing Anomaly Detection ---")
+        
+        anomaly_data = {
+            "current_data": {
+                "daily_revenue": 15000,
+                "new_leads": 25,
+                "conversion_rate": 0.15,
+                "customer_satisfaction": 3.2,
+                "system_performance": 78
+            },
+            "baseline_data": {
+                "daily_revenue": 12000,
+                "new_leads": 18,
+                "conversion_rate": 0.22,
+                "customer_satisfaction": 4.1,
+                "system_performance": 95
+            },
+            "sensitivity": "medium"
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/analytics/detect-anomalies", anomaly_data)
+        if response is None:
+            self.log_result("Anomaly Detection", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                analysis = data.get("anomaly_analysis", {})
+                alert_level = data.get("alert_level", "")
+                self.log_result("Anomaly Detection", success, f"GPT-5 anomaly detection completed with {alert_level} alert level")
+            except:
+                self.log_result("Anomaly Detection", False, "Invalid JSON response")
+        else:
+            self.log_result("Anomaly Detection", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_ai_insights_dashboard(self):
+        """Test AI insights dashboard"""
+        print("\n--- Testing AI Insights Dashboard ---")
+        
+        response = self.make_request("GET", "/ai-advanced/dashboard/insights")
+        if response is None:
+            self.log_result("AI Insights Dashboard", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                dashboard = data.get("dashboard", {})
+                models_active = dashboard.get("models_active", [])
+                insights_today = dashboard.get("insights_generated_today", 0)
+                self.log_result("AI Insights Dashboard", success, f"Dashboard loaded with {len(models_active)} active models, {insights_today} insights today")
+            except:
+                self.log_result("AI Insights Dashboard", False, "Invalid JSON response")
+        else:
+            self.log_result("AI Insights Dashboard", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_intelligent_recommendations(self):
+        """Test intelligent business recommendations"""
+        print("\n--- Testing Intelligent Recommendations ---")
+        
+        recommendation_data = {
+            "context": "Sales performance optimization for Q1 2025",
+            "business_data": {
+                "current_conversion_rate": 0.18,
+                "average_deal_size": 25000,
+                "sales_cycle_days": 45,
+                "team_size": 8,
+                "monthly_target": 500000,
+                "current_performance": 420000
+            },
+            "focus_area": "sales_optimization"
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/recommendations/generate", recommendation_data)
+        if response is None:
+            self.log_result("Intelligent Recommendations", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                recommendations = data.get("recommendations", {})
+                recommendation_id = data.get("recommendation_id", "")
+                self.log_result("Intelligent Recommendations", success, f"GPT-5 generated business recommendations: {recommendation_id}")
+            except:
+                self.log_result("Intelligent Recommendations", False, "Invalid JSON response")
+        else:
+            self.log_result("Intelligent Recommendations", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_ai_configuration(self):
+        """Test AI configuration and management"""
+        print("\n--- Testing AI Configuration ---")
+        
+        # Test get available models
+        response = self.make_request("GET", "/ai-advanced/config/available-models")
+        if response is None:
+            self.log_result("Get Available AI Models", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                models = data.get("available_models", {})
+                total_models = data.get("total_models", 0)
+                self.log_result("Get Available AI Models", success, f"Retrieved {total_models} AI models (GPT-5, Claude-4, Gemini-2.5)")
+            except:
+                self.log_result("Get Available AI Models", False, "Invalid JSON response")
+        else:
+            self.log_result("Get Available AI Models", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Test update AI preferences
+        preferences_data = {
+            "preferred_model": "gpt-5",
+            "response_style": "detailed",
+            "auto_insights": True,
+            "notification_frequency": "daily",
+            "analysis_depth": "comprehensive"
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/config/update-preferences", preferences_data)
+        if response is None:
+            self.log_result("Update AI Preferences", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                message = data.get("message", "")
+                self.log_result("Update AI Preferences", success, f"AI preferences updated: {message}")
+            except:
+                self.log_result("Update AI Preferences", False, "Invalid JSON response")
+        else:
+            self.log_result("Update AI Preferences", False, f"HTTP {response.status_code}: {response.text}")
+    
+    def test_custom_model_training(self):
+        """Test custom AI model training (Admin only)"""
+        print("\n--- Testing Custom AI Model Training ---")
+        
+        # Switch to admin token if available
+        original_token = self.auth_token
+        if self.admin_token:
+            self.auth_token = self.admin_token
+        
+        training_data = {
+            "business_domain": "customer_retention",
+            "training_data": [
+                {"customer_id": "c001", "engagement_score": 85, "purchase_frequency": 12, "support_tickets": 2, "retention_outcome": "retained"},
+                {"customer_id": "c002", "engagement_score": 45, "purchase_frequency": 3, "support_tickets": 8, "retention_outcome": "churned"},
+                {"customer_id": "c003", "engagement_score": 92, "purchase_frequency": 18, "support_tickets": 1, "retention_outcome": "retained"},
+                {"customer_id": "c004", "engagement_score": 38, "purchase_frequency": 2, "support_tickets": 12, "retention_outcome": "churned"}
+            ],
+            "model_parameters": {
+                "algorithm": "gradient_boosting",
+                "validation_split": 0.2,
+                "max_iterations": 1000
+            }
+        }
+        
+        response = self.make_request("POST", "/ai-advanced/models/train-custom", training_data)
+        if response is None:
+            self.log_result("Custom AI Model Training", False, "Connection timeout or error")
+        elif response.status_code == 200:
+            try:
+                data = response.json()
+                success = data.get("success", False)
+                model_info = data.get("model_info", {})
+                model_id = data.get("model_id", "")
+                training_status = data.get("training_status", "")
+                self.log_result("Custom AI Model Training", success, f"Custom model training initiated: {model_id}, status: {training_status}")
+            except:
+                self.log_result("Custom AI Model Training", False, "Invalid JSON response")
+        elif response.status_code == 403:
+            self.log_result("Custom AI Model Training", True, "Admin access required (expected behavior for non-admin users)")
+        else:
+            self.log_result("Custom AI Model Training", False, f"HTTP {response.status_code}: {response.text}")
+        
+        # Restore original token
+        self.auth_token = original_token
+    
     def test_salesforce_integration(self):
         """Test Salesforce CRM Integration endpoints"""
         print("\n--- Testing Salesforce CRM Integration ---")
