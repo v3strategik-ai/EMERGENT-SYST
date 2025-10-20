@@ -65,12 +65,21 @@ const Landing = () => {
           </p>
           <div className="flex justify-center space-x-4">
             <Link to="/register">
-              <Button size="lg" className="text-lg px-8" data-testid="hero-get-started-button">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg" 
+                data-testid="hero-get-started-button"
+              >
                 Get Started Free
               </Button>
             </Link>
             <Link to="/login">
-              <Button size="lg" variant="outline" className="text-lg px-8" data-testid="hero-login-button">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-8 border-2 border-gray-800 text-gray-900 hover:bg-gray-100 font-bold shadow-lg" 
+                data-testid="hero-login-button"
+              >
                 Sign In
               </Button>
             </Link>
