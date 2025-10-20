@@ -25,37 +25,220 @@ import {
 import { toast } from 'sonner';
 import api from '../utils/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-
 const AICopilot = ({ isListening, onToggleListening }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState('Ready');
-  const [lastCommand, setLastCommand] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState('chat');
+  
+  // Chat functionality
+  const [messages, setMessages] = useState([
+    {
+      type: 'ai',
+      content: 'Hello! I\'m your AI Business Intelligence Assistant. I can help you with analytics, forecasting, report generation, and more. What would you like to know?',
+      timestamp: new Date().toLocaleTimeString()
+    }
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const messagesEndRef = useRef(null);
+  
+  // Voice recognition
+  const [isVoiceSupported, setIsVoiceSupported] = useState(false);
+  const [recognition, setRecognition] = useState(null);
+  
+  // AI Insights
+  const [aiInsights, setAiInsights] = useState({
+    predictions: [],
+    recommendations: [],
+    anomalies: []
+  });
 
   useEffect(() => {
-    if (isListening) {
-      setStatus('Listening...');
-      const timeout = setTimeout(() => {
-        simulateCommand();
-      }, 2000);
-      return () => clearTimeout(timeout);
-    } else {
-      setStatus('Ready');
+    // Initialize voice recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = true;
+      recognitionInstance.interimResults = true;
+      recognitionInstance.lang = 'en-US';
+      
+      recognitionInstance.onresult = (event) => {
+        const latest = event.results[event.results.length - 1];
+        if (latest.isFinal) {
+          const command = latest[0].transcript.trim();
+          handleVoiceCommand(command);
+        }
+      };
+      
+      recognitionInstance.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setStatus('Voice recognition error');
+        onToggleListening();
+      };
+      
+      setRecognition(recognitionInstance);
+      setIsVoiceSupported(true);
     }
-  }, [isListening]);
+    
+    // Load AI insights
+    loadAIInsights();
+    
+    // Scroll to bottom when messages change
+    scrollToBottom();
+  }, [messages]);
 
-  const simulateCommand = async () => {
-    const commands = [
-      'Generate Q3 financial report',
-      'Analyze sales pipeline',
-      'Create customer segmentation',
-      'Forecast revenue trends'
-    ];
-    const command = commands[Math.floor(Math.random() * commands.length)];
-    setLastCommand(command);
-    setStatus('Processing...');
-    setIsProcessing(true);
+  useEffect(() => {
+    if (isListening && recognition) {
+      setStatus('Listening...');
+      recognition.start();
+    } else if (recognition) {
+      setStatus('Ready');
+      recognition.stop();
+    }
+  }, [isListening, recognition]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const loadAIInsights = async () => {
+    try {
+      const response = await api.get('/ai-advanced/dashboard/insights');
+      if (response.data.success) {
+        setAiInsights(response.data.dashboard);
+      }
+    } catch (error) {
+      console.error('Error loading AI insights:', error);
+    }
+  };
+
+  const handleVoiceCommand = async (command) => {
+    try {
+      setIsProcessing(true);
+      setStatus('Processing voice command...');
+      
+      const response = await api.post('/ai-advanced/copilot/voice-command', {
+        command_text: command,
+        user_context: {
+          current_page: window.location.pathname,
+          platform_section: 'main_dashboard'
+        }
+      });
+      
+      if (response.data.success) {
+        addMessage('user', command);
+        addMessage('ai', response.data.interpretation);
+        setStatus('Voice command processed');
+      } else {
+        toast.error('Failed to process voice command');
+      }
+    } catch (error) {
+      console.error('Voice command error:', error);
+      toast.error('Voice command processing failed');
+    } finally {
+      setIsProcessing(false);
+      onToggleListening();
+    }
+  };
+
+  const handleTextMessage = async (message) => {
+    if (!message.trim()) return;
+    
+    try {
+      setIsProcessing(true);
+      addMessage('user', message);
+      setInputMessage('');
+      
+      const response = await api.post('/ai-advanced/copilot/query', {
+        query: message,
+        context_data: {
+          current_page: window.location.pathname,
+          user_session: Date.now()
+        }
+      });
+      
+      if (response.data.success) {
+        addMessage('ai', response.data.ai_response);
+      } else {
+        addMessage('ai', 'I apologize, but I\'m having trouble processing your request right now.');
+      }
+    } catch (error) {
+      console.error('Text message error:', error);
+      addMessage('ai', 'Sorry, there was an error processing your message. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const addMessage = (type, content) => {
+    const newMessage = {
+      type,
+      content,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const generateQuickInsight = async (type) => {
+    try {
+      setIsProcessing(true);
+      let endpoint = '';
+      let requestData = {};
+      
+      switch (type) {
+        case 'sales_forecast':
+          endpoint = '/ai-advanced/predict/sales-forecast';
+          requestData = {
+            sales_data: [
+              { value: 50000, status: 'Prospecting', source: 'Website' },
+              { value: 75000, status: 'Negotiation', source: 'Referral' }
+            ],
+            forecast_period_days: 30
+          };
+          break;
+        case 'executive_report':
+          endpoint = '/ai-advanced/reports/executive-summary';
+          requestData = {
+            data: {
+              sales: { revenue: 150000, deals: 12 },
+              crm: { leads: 45, conversion_rate: 0.23 },
+              finance: { expenses: 85000, profit_margin: 0.43 }
+            }
+          };
+          break;
+        case 'recommendations':
+          endpoint = '/ai-advanced/recommendations/generate';
+          requestData = {
+            context: 'Business performance optimization',
+            business_data: {
+              revenue_growth: 0.15,
+              customer_satisfaction: 0.87,
+              operational_efficiency: 0.78
+            }
+          };
+          break;
+        default:
+          return;
+      }
+      
+      const response = await api.post(endpoint, requestData);
+      
+      if (response.data.success) {
+        const resultText = typeof response.data === 'object' 
+          ? JSON.stringify(response.data, null, 2)
+          : response.data;
+        addMessage('ai', `Generated ${type.replace('_', ' ')} insight:\n\n${resultText}`);
+      } else {
+        addMessage('ai', `Failed to generate ${type.replace('_', ' ')} insight.`);
+      }
+    } catch (error) {
+      console.error(`${type} generation error:`, error);
+      addMessage('ai', `Error generating ${type.replace('_', ' ')} insight.`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
     try {
       const token = localStorage.getItem('token');
