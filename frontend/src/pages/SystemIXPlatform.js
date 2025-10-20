@@ -83,7 +83,12 @@ const SystemIXPlatform = () => {
               <Button variant="outline" size="sm" onClick={toggleTheme} data-testid="theme-toggle">
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSettingsOpen(true)}
+                title="Settings"
+              >
                 <Settings className="h-4 w-4" />
                 <Badge variant="destructive" className="ml-1">2</Badge>
               </Button>
