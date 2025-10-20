@@ -18,7 +18,7 @@ import PaymentsSuite from '../components/suites/PaymentsSuite';
 import IntegrationsSuite from '../components/suites/IntegrationsSuite';
 
 const SystemIXPlatform = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isListening, setIsListening] = useState(false);
