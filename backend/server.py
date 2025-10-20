@@ -359,15 +359,87 @@ async def delete_status_check(
 
 # ==================== ADMIN ENDPOINTS ====================
 
-@api_router.get("/admin/users", response_model=List[User])
-async def get_all_users(current_user: User = Depends(get_admin_user)):
-    users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+@api_router.get("/admin/users")
+async def get_all_users(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
     
+    query = {}
+    users = await db.users.find(query, {"_id": 0, "password": 0}).sort("created_at", -1).to_list(1000)
+    
+    # Convert ISO strings to datetime objects
     for user in users:
         if isinstance(user.get('created_at'), str):
             user['created_at'] = datetime.fromisoformat(user['created_at'])
     
-    return users
+    return {"users": users}
+
+@api_router.put("/admin/users/{user_id}/promote")
+async def promote_user_to_admin(user_id: str, current_user: User = Depends(get_current_user)):
+    """Promote a user to admin role - only admins can do this"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Update user role to admin
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"role": "admin"}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User promoted to admin successfully", "user_id": user_id}
+
+@api_router.put("/admin/users/{user_id}/demote")
+async def demote_admin_user(user_id: str, current_user: User = Depends(get_current_user)):
+    """Demote an admin user to employee role - only admins can do this"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Prevent self-demotion
+    if current_user.id == user_id:
+        raise HTTPException(status_code=400, detail="Cannot demote yourself")
+    
+    # Update user role to employee
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"role": "employee"}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User demoted to employee successfully", "user_id": user_id}
+
+@api_router.post("/admin/assign-first-admin")
+async def assign_first_admin():
+    """Assign first admin - only works if no admins exist"""
+    
+    # Check if any admin users exist
+    existing_admin = await db.users.find_one({"role": "admin"})
+    if existing_admin:
+        raise HTTPException(status_code=400, detail="Admin users already exist")
+    
+    # Get the first user (oldest account) and make them admin
+    first_user = await db.users.find_one({}, {"_id": 0}, sort=[("created_at", 1)])
+    if not first_user:
+        raise HTTPException(status_code=404, detail="No users found")
+    
+    # Update first user to admin
+    await db.users.update_one(
+        {"id": first_user["id"]},
+        {"$set": {"role": "admin"}}
+    )
+    
+    return {
+        "message": "First admin assigned successfully",
+        "admin_user": {
+            "id": first_user["id"],
+            "name": first_user["name"],
+            "email": first_user["email"]
+        }
+    }
 
 @api_router.get("/admin/analytics", response_model=AnalyticsResponse)
 async def get_analytics(current_user: User = Depends(get_admin_user)):
