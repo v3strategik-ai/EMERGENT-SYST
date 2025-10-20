@@ -21,6 +21,7 @@ import IntegrationsSuite from '../components/suites/IntegrationsSuite';
 const SystemIXPlatform = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isListening, setIsListening] = useState(false);
 
