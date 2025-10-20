@@ -163,7 +163,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="border-t py-8 mt-20">
         <div className="max-w-7xl mx-auto px-4 text-center text-gray-600">
-          <p>© 2025 Agentik Solutions. Built with ❤️ on Emergent Platform.</p>
+          <p className="text-gray-800 font-medium">© 2025 Agentik Solutions. Enterprise Business Intelligence Platform.</p>
         </div>
       </footer>
     </div>
