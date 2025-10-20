@@ -1587,6 +1587,7 @@ class BackendTester:
             ("Analytics Suite (NEW)", self.test_analytics_suite),
             ("Integrations Suite (NEW)", self.test_integrations_suite),
             ("AI Copilot", self.test_ai_copilot),
+            ("Advanced AI Suite (NEW)", self.test_advanced_ai_suite),
             ("Admin Endpoints", self.test_admin_endpoints)
         ]
         
