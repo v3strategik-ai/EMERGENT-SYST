@@ -7,6 +7,7 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Sun, Moon, Settings, LogOut } from 'lucide-react';
 import AICopilot from '../components/AICopilot';
+import SettingsModal from '../components/modals/SettingsModal';
 import Dashboard from '../components/suites/Dashboard';
 import CRMSuite from '../components/suites/CRMSuite';
 import AnalyticsSuite from '../components/suites/AnalyticsSuite';
