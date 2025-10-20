@@ -31,10 +31,21 @@ const Landing = () => {
             </div>
             <div className="flex space-x-3">
               <Link to="/login">
-                <Button variant="ghost" data-testid="landing-login-button">Log in</Button>
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700 text-gray-900 hover:bg-gray-100 font-semibold" 
+                  data-testid="landing-login-button"
+                >
+                  Log in
+                </Button>
               </Link>
               <Link to="/register">
-                <Button data-testid="landing-register-button">Get Started</Button>
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold" 
+                  data-testid="landing-register-button"
+                >
+                  Get Started
+                </Button>
               </Link>
             </div>
           </div>
