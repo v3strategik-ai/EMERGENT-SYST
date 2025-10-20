@@ -176,6 +176,9 @@ const SystemIXPlatform = () => {
         {/* AI Copilot */}
         <AICopilot isListening={isListening} onToggleListening={handleToggleListening} />
 
+        {/* Settings Modal */}
+        <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+
         {/* Footer */}
         <footer className="border-t border-border bg-card mt-12">
           <div className="px-6 py-4 text-center">
