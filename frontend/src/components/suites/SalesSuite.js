@@ -15,6 +15,7 @@ const SalesSuite = () => {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newDealOpen, setNewDealOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   useEffect(() => {
     fetchDeals();
