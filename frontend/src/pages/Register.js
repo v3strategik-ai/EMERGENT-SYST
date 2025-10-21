@@ -77,6 +77,7 @@ const Register = () => {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 data-testid="register-email-input"
+                className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 
