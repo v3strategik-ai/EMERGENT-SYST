@@ -162,6 +162,7 @@ const CPQSuite = () => {
       </Card>
 
       <NewQuoteModal open={newQuoteOpen} onOpenChange={setNewQuoteOpen} onSuccess={fetchQuotes} />
+      <PriceCalculatorModal open={calculatorOpen} onOpenChange={setCalculatorOpen} />
     </div>
   );
 };
