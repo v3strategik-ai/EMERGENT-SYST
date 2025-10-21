@@ -13,6 +13,7 @@ const CPQSuite = () => {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newQuoteOpen, setNewQuoteOpen] = useState(false);
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   useEffect(() => {
     fetchQuotes();
