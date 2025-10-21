@@ -131,10 +131,10 @@ const CRMSuite = () => {
               Import Leads
               <Badge variant='secondary' className='ml-2'>CSV</Badge>
             </Button>
-            <Button variant='outline' className='border-blue-600 text-blue-600' onClick={() => toast.success('Leads exported successfully!')}>
-              <FileDown className='h-4 w-4 mr-2' />
-              Export Data
-              <Badge variant='secondary' className='ml-2'>14</Badge>
+            <Button variant='outline' className='border-blue-600 text-blue-600' onClick={handleExportLeads}>
+              <Download className='h-4 w-4 mr-2' />
+              Export Leads
+              <Badge variant='secondary' className='ml-2'>CSV</Badge>
             </Button>
           </div>
 
