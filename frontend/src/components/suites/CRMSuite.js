@@ -14,6 +14,7 @@ const CRMSuite = () => {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newLeadOpen, setNewLeadOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
   useEffect(() => {
     fetchLeads();
   }, []);
