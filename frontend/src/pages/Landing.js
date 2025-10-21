@@ -115,13 +115,13 @@ const Landing = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg bg-white">
             <CardContent className="pt-6">
               <div className="rounded-full bg-green-100 w-12 h-12 flex items-center justify-center mb-4">
                 <Shield className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Platform Integrations</h3>
-              <p className="text-gray-700 font-medium">
+              <h3 className="text-xl font-bold mb-2 text-black">Platform Integrations</h3>
+              <p className="text-gray-800 font-semibold">
                 Seamless connectivity with Salesforce, Slack, Zoom, and other business-critical platforms.
               </p>
             </CardContent>
