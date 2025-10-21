@@ -50,6 +50,35 @@ const CRMSuite = () => {
     }
   };
 
+  const handleExportLeads = () => {
+    // Create CSV content
+    const headers = ['Name', 'Company', 'Value', 'Status', 'Source', 'Date'];
+    const csvContent = [
+      headers.join(','),
+      ...leads.map(lead => [
+        lead.name,
+        lead.company,
+        lead.value,
+        lead.status,
+        lead.source,
+        new Date(lead.created_at).toLocaleDateString()
+      ].join(','))
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `leads-export-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    toast.success('Leads exported successfully!');
+  };
+
   // Calculate metrics from real data
   const totalValue = leads.reduce((sum, lead) => sum + lead.value, 0);
   const activeLeads = leads.length;
