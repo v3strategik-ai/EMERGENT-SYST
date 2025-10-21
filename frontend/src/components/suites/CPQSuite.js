@@ -81,7 +81,7 @@ const CPQSuite = () => {
               Create Quote
               <Badge variant='secondary' className='ml-2'>1</Badge>
             </Button>
-            <Button variant='outline' onClick={() => toast.info('Opening price calculator...')}>
+            <Button variant='outline' onClick={() => setCalculatorOpen(true)}>
               <Settings className='h-4 w-4 mr-2' />
               Price Calculator
             </Button>
