@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Users, DollarSign, TrendingUp, BarChart3, Plus, Upload, FileDown, Edit, Trash2, Loader2 } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, BarChart3, Plus, Upload, FileDown, Download, Edit, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { crmAPI } from '../../utils/crmAPI';
 import NewLeadModal from '../modals/NewLeadModal';
