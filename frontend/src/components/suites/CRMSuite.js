@@ -50,33 +50,26 @@ const CRMSuite = () => {
     }
   };
 
-  const handleExportLeads = () => {
-    // Create CSV content
-    const headers = ['Name', 'Company', 'Value', 'Status', 'Source', 'Date'];
-    const csvContent = [
-      headers.join(','),
-      ...leads.map(lead => [
-        lead.name,
-        lead.company,
-        lead.value,
-        lead.status,
-        lead.source,
-        new Date(lead.created_at).toLocaleDateString()
-      ].join(','))
-    ].join('\n');
+  const handleExportLeads = async () => {
+    try {
+      const response = await api.get('/bulk/export/leads', {
+        responseType: 'blob',
+      });
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `leads-export-${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
-    toast.success('Leads exported successfully!');
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Leads exported successfully!');
+    } catch (error) {
+      toast.error('Failed to export leads');
+    }
   };
 
   // Calculate metrics from real data
