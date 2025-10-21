@@ -99,7 +99,10 @@ const Register = () => {
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
               <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
-                <SelectTrigger data-testid="register-role-select">
+                <SelectTrigger 
+                  data-testid="register-role-select"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
