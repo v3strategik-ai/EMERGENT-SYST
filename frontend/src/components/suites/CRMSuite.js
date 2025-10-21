@@ -7,6 +7,7 @@ import { Users, DollarSign, TrendingUp, BarChart3, Plus, Upload, FileDown, Edit,
 import { toast } from 'sonner';
 import { crmAPI } from '../../utils/crmAPI';
 import NewLeadModal from '../modals/NewLeadModal';
+import BulkImportModal from '../modals/BulkImportModal';
 import { format } from 'date-fns';
 
 const CRMSuite = () => {
