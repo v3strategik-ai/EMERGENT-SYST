@@ -7,6 +7,7 @@ import { FileText, DollarSign, TrendingUp, Clock, Plus, Settings, Download, Load
 import { toast } from 'sonner';
 import { quoteAPI } from '../../utils/crmAPI';
 import NewQuoteModal from '../modals/NewQuoteModal';
+import PriceCalculatorModal from '../modals/PriceCalculatorModal';
 import { format } from 'date-fns';
 
 const CPQSuite = () => {
