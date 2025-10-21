@@ -103,13 +103,13 @@ const Landing = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg bg-white">
             <CardContent className="pt-6">
               <div className="rounded-full bg-purple-100 w-12 h-12 flex items-center justify-center mb-4">
                 <BarChart3 className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Advanced Analytics</h3>
-              <p className="text-gray-700 font-medium">
+              <h3 className="text-xl font-bold mb-2 text-black">Advanced Analytics</h3>
+              <p className="text-gray-800 font-semibold">
                 Comprehensive dashboards with real-time insights, custom reports, and predictive analytics.
               </p>
             </CardContent>
