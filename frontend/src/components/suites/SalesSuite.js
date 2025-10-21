@@ -42,6 +42,36 @@ const SalesSuite = () => {
     }
   };
 
+  const handleExportDeals = async () => {
+    try {
+      const response = await api.get('/bulk/export/deals', {
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `deals_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Deals exported successfully!');
+    } catch (error) {
+      toast.error('Failed to export deals');
+    }
+  };
+
+  const handleShareDashboard = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      toast.success('Dashboard URL copied to clipboard!');
+    }).catch(() => {
+      toast.error('Failed to copy URL to clipboard');
+    });
+  };
+
   const closedDeals = deals.filter(d => d.status === 'Closed Won').length;
   const totalRevenue = deals.filter(d => d.status === 'Closed Won').reduce((sum, d) => sum + d.value, 0);
   const teamSize = 23; // Static for now
