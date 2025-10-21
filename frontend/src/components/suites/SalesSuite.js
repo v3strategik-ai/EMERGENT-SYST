@@ -85,11 +85,15 @@ const SalesSuite = () => {
               New Deal
               <Badge variant='secondary' className='ml-2'>7</Badge>
             </Button>
-            <Button variant='outline' onClick={() => toast.success('Sales report exported successfully!')}>
+            <Button variant='outline' onClick={handleExportDeals}>
               <Download className='h-4 w-4 mr-2' />
-              Export Report
+              Export Deals
             </Button>
-            <Button variant='outline' onClick={() => toast.success('Dashboard shared successfully!')}>
+            <Button variant='outline' onClick={() => setImportModalOpen(true)}>
+              <Plus className='h-4 w-4 mr-2' />
+              Import Deals
+            </Button>
+            <Button variant='outline' onClick={handleShareDashboard}>
               <Share2 className='h-4 w-4 mr-2' />
               Share Dashboard
             </Button>
