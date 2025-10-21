@@ -231,6 +231,13 @@ const CRMSuite = () => {
       </Card>
 
       <NewLeadModal open={newLeadOpen} onOpenChange={setNewLeadOpen} onSuccess={fetchLeads} />
+      <BulkImportModal 
+        open={importModalOpen} 
+        onOpenChange={setImportModalOpen} 
+        onSuccess={fetchLeads}
+        importType="leads"
+        title="Bulk Import Leads"
+      />
     </div>
   );
 };
