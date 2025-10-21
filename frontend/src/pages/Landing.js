@@ -139,13 +139,13 @@ const Landing = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg">
+          <Card className="border-2 hover:border-blue-500 transition-all shadow-lg bg-white">
             <CardContent className="pt-6">
               <div className="rounded-full bg-red-100 w-12 h-12 flex items-center justify-center mb-4">
                 <Zap className="h-6 w-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">AI-Powered Insights</h3>
-              <p className="text-gray-700 font-medium">
+              <h3 className="text-xl font-bold mb-2 text-black">AI-Powered Insights</h3>
+              <p className="text-gray-800 font-semibold">
                 Leverage artificial intelligence for business insights, predictive analytics, and smart automation.
               </p>
             </CardContent>
