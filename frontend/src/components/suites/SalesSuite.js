@@ -254,6 +254,13 @@ const SalesSuite = () => {
       </Card>
 
       <NewDealModal open={newDealOpen} onOpenChange={setNewDealOpen} onSuccess={fetchDeals} />
+      <BulkImportModal 
+        open={importModalOpen} 
+        onOpenChange={setImportModalOpen} 
+        onSuccess={fetchDeals}
+        importType="deals"
+        title="Bulk Import Deals"
+      />
     </div>
   );
 };
