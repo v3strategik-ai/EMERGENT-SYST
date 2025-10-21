@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Users, DollarSign, TrendingUp, BarChart3, Plus, Upload, FileDown, Download, Edit, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { crmAPI } from '../../utils/crmAPI';
+import api from '../../utils/api';
 import NewLeadModal from '../modals/NewLeadModal';
 import BulkImportModal from '../modals/BulkImportModal';
 import { format } from 'date-fns';
