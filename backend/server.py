@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone, timedelta, date
 from routes import integrations
 from routes import advanced_ai
+from routes import bulk_operations
 import bcrypt
 import jwt
 from ai_copilot import AICopilot
