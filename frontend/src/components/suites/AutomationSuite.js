@@ -49,6 +49,42 @@ const AutomationSuite = () => {
     }
   };
 
+  const handleRunAll = async () => {
+    try {
+      // Update all workflows to active status
+      const activeCount = workflows.filter(w => w.status === 'Paused').length;
+      
+      for (const workflow of workflows) {
+        if (workflow.status === 'Paused') {
+          await workflowAPI.updateWorkflow(workflow.id, { status: 'Active' });
+        }
+      }
+      
+      toast.success(`${activeCount} workflows started successfully!`);
+      fetchWorkflows();
+    } catch (error) {
+      toast.error('Failed to run all workflows');
+    }
+  };
+
+  const handlePauseAll = async () => {
+    try {
+      // Update all workflows to paused status
+      const pausedCount = workflows.filter(w => w.status === 'Active').length;
+      
+      for (const workflow of workflows) {
+        if (workflow.status === 'Active') {
+          await workflowAPI.updateWorkflow(workflow.id, { status: 'Paused' });
+        }
+      }
+      
+      toast.success(`${pausedCount} workflows paused successfully!`);
+      fetchWorkflows();
+    } catch (error) {
+      toast.error('Failed to pause all workflows');
+    }
+  };
+
   const activeCount = workflows.filter(w => w.status === 'Active').length;
   const totalRuns = workflows.reduce((sum, w) => sum + (w.run_count || 0), 0);
   const metrics = [
